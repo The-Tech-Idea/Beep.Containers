@@ -40,8 +40,4 @@
     <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="1.0.7" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Beep.Containers.Models\TheTechIdea.Beep.Container.Model.csproj" />
-  </ItemGroup>
-
 </Project>
