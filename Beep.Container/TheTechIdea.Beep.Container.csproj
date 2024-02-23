@@ -33,8 +33,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="1.0.20" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="1.0.345" />
+    <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="1.0.21" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="1.0.349" />
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="1.0.119" />
     <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="1.0.5" />
     <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="1.0.7" />
