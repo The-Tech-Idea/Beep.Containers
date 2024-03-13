@@ -23,6 +23,10 @@ namespace TheTechIdea.Beep.Container
         }
         public static void AddAllConnectionConfigurations(this IBeepService beepService)
         {
+            if (beepService.DMEEditor.ConfigEditor.DataDriversClasses == null)
+            {
+                beepService.DMEEditor.ConfigEditor.DataDriversClasses = new List<DataManagementModels.DriversConfigurations.ConnectionDriversConfig>();
+            }
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.AddRange(ConnectionHelper.GetAllConnectionConfigs());
         }
         public static void AddAllDataSourceMappings(this IBeepService beepService)
