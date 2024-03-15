@@ -8,14 +8,42 @@ namespace TheTechIdea.Beep.Container
     public static class RegisterBeepinServiceCollection
     {
         public static IServiceCollection Services { get; private set; }
-      
-     
+
+        private static IBeepService beepService;
+        private static string BeepDataPath;
         public static IServiceCollection RegisterBeep(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType)
         {
             Services = services;
-            IBeepService beepService = new   BeepService(services,directorypath, containername, configType);
+            beepService = new   BeepService(services,directorypath, containername, configType);
             Services.AddSingleton<IBeepService>(beepService);
+            Createfolder();
             return Services;
+        }
+        public static IServiceCollection CreateBeepMapping(this IBeepService beepService)
+        {
+            if(beepService!=null) {
+                beepService.AddAllConnectionConfigurations();
+                beepService.AddAllDataSourceMappings();
+                beepService.AddAllDataSourceQueryConfigurations();
+            }
+            return Services;
+        }
+        public static IServiceCollection CreateMainFolder(this IBeepService beepService)
+        {
+            Createfolder();
+            return Services;
+        }
+        private static void Createfolder()
+        {
+            if (beepService != null)
+            {
+                if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep"));
+
+                }
+                BeepDataPath= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
+            }
         }
         public static void AddAllDataSourceQueryConfigurations(this IBeepService beepService)
         {
