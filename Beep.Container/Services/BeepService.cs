@@ -1,4 +1,4 @@
-﻿using BeepEnterprize.Vis.Module;
+﻿using Beep.Vis.Module;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data;
 using TheTechIdea.Beep.ConfigUtil;
