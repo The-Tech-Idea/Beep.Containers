@@ -2,7 +2,7 @@
 
 namespace TheTechIdea.Beep.Container.Models
 {
-    public interface IContainer
+    public interface IBeepContainer
     {
         IBeepService BeepService { get; set; }
         string AdminUserID { get; set; }

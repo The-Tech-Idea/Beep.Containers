@@ -3,7 +3,7 @@ using TheTechIdea.Beep.Container.Services;
 
 namespace TheTechIdea.Beep.Container.Models
 {
-    public class BeepContainer:IContainer
+    public class BeepContainer:IBeepContainer
 
     {
         public BeepContainer()

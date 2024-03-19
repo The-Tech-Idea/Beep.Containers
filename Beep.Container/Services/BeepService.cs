@@ -8,9 +8,13 @@ using TheTechIdea.Util;
 
 namespace TheTechIdea.Beep.Container.Services
 {
-    public class BeepService : IBeepService
+    public class BeepService : IBeepService,IDisposable
     {
-      
+
+        public BeepService()
+        {
+            
+        }
         public BeepService(IServiceCollection services, string directorypath,string containername, BeepConfigType configType)
         {
             Services = services;
@@ -32,6 +36,7 @@ namespace TheTechIdea.Beep.Container.Services
         public string  Containername { get; set; }
         CancellationTokenSource tokenSource;
         CancellationToken token;
+        private bool disposedValue;
         #endregion
         public void Configure(string directorypath , string containername, BeepConfigType configType) //ContainerBuilder builder
         {
@@ -86,7 +91,54 @@ namespace TheTechIdea.Beep.Container.Services
             Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
         }
 
-        
-    
+        public  virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // Dispose managed state (managed objects).
+                    // Check each managed object to see if it implements IDisposable, then call Dispose on it.
+                    DMEEditor?.Dispose();
+                    Config_editor?.Dispose();
+                    //lg?.Dispose();
+                    //util?.Dispose();
+                    //Erinfo?.Dispose();
+                    //jsonLoader?.Dispose();
+                    LLoader?.Dispose();
+
+                    // If you're using any managed resources that need to be disposed, dispose them here.
+                    // For example, if you have a Stream or a SqlConnection, dispose them here.
+                    // stream?.Dispose();
+                    // sqlConnection?.Dispose();
+                }
+
+                // Free unmanaged resources (unmanaged objects) and override the finalizer below.
+                // Set large fields to null.
+                DMEEditor = null;
+                Config_editor = null;
+                lg = null;
+                util = null;
+                Erinfo = null;
+                jsonLoader = null;
+                LLoader = null;
+
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~BeepService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

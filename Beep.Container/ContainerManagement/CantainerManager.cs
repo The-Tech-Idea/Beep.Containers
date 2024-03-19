@@ -6,18 +6,22 @@ using TheTechIdea.Util;
 
 namespace TheTechIdea.Beep.Container.ContainerManagement
 {
-    public class CantainerManager : ICantainerManager
+    public  class CantainerManager : ICantainerManager,IDisposable
     {
         private IServiceCollection services;
+        private bool disposedValue;
+
         public CantainerManager(IServiceCollection pservices)
         {
             services = pservices;
-            Containers = new List<IContainer>();
+            Containers = new List<IBeepContainer>();
             ErrorsandMesseges = new ErrorsInfo();
+            ContainerFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
         }
-        public List<IContainer> Containers { get; set; }
+        public List<IBeepContainer> Containers { get; set; }
         public ErrorsInfo ErrorsandMesseges { get; set; }
-       
+
+        public string ContainerFolderPath { get; set; }
 
         public async Task<ErrorsInfo> RemoveContainer(string pContainerName)
         {
@@ -25,7 +29,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if user already Exist
-                var t = Task.Run<IContainer>(() => Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault());
+                var t = Task.Run<IBeepContainer>(() => Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault());
                 t.Wait();
 
                 if (t.Result == null)
@@ -35,6 +39,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 }
                 else
                 {
+                    t.Dispose();
                     Containers.Remove(t.Result);
                     ErrorsandMesseges.Flag = Errors.Ok;
                     ErrorsandMesseges.Message = $"Container Added";
@@ -52,7 +57,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> AddUpdateContainer(IContainer pContainer)
+        public async Task<ErrorsInfo> AddUpdateContainer(IBeepContainer pContainer)
         {
             try
             {
@@ -85,19 +90,30 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath)
+        public async Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath=null)
         {
             try
             {
-                IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
+                ErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if Container already Exist
-
+                if(string.IsNullOrEmpty(pContainerName))
+                {
+                    ErrorsandMesseges.Flag = Errors.Failed;
+                    ErrorsandMesseges.Message = $"Container Name is Empty";
+                    return await Task.FromResult(ErrorsandMesseges);
+                }
+                if(string.IsNullOrEmpty(pContainerFolderPath))
+                {
+                    pContainerFolderPath = ContainerFolderPath;
+                }
+                
                 if (!Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).Any())
                 {
-                    BeepContainer x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
-                    BeepService beepservcie = new BeepService(pservices,AppContext.BaseDirectory, pContainerName, BeepConfigType.Container);
-
+                    IBeepContainer x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
+                    IBeepService beepservice = new BeepService(pservices, pContainerFolderPath, pContainerName, BeepConfigType.Container);
+                    x.BeepService = beepservice;
                     Containers.Add(x);
+                   await  CreateContainerFileSystem(x);
                     ErrorsandMesseges.Flag = Errors.Ok;
                     ErrorsandMesseges.Message = $"Container Added";
                 }
@@ -126,17 +142,13 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if Container already Exist
 
-                if (!Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).Any())
+                ErrorsandMesseges= await CreateContainer(pContainerName, pservices, pContainerFolderPath);
+                if(ErrorsandMesseges.Flag==Errors.Ok)
                 {
-                    BeepContainer x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath, SecretKey = pSecretKey, TokenKey = pTokenKey };
-                    Containers.Add(x);
-                    ErrorsandMesseges.Flag = Errors.Ok;
-                    ErrorsandMesseges.Message = $"Container Added";
-                }
-                else
-                {
-                    ErrorsandMesseges.Flag = Errors.Failed;
-                    ErrorsandMesseges.Message = $"Container Exist";
+                    IBeepContainer x = Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                    x.SecretKey = pSecretKey;
+                    x.TokenKey = pTokenKey;
+                    ErrorsandMesseges = await AddUpdateContainer(x);
                 }
 
             }
@@ -151,14 +163,14 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainerFileSystem(IContainer pContainer)
+        public async Task<ErrorsInfo> CreateContainerFileSystem(IBeepContainer pContainer)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if Container already Exist
 
-                ErrorsandMesseges = (IErrorsInfo)AddUpdateContainer(pContainer);
+              //  ErrorsandMesseges = (IErrorsInfo)AddUpdateContainer(pContainer);
                 //--------------------- Create File System -------------
                 if (ErrorsandMesseges.Flag == Errors.Ok)
                 {
@@ -166,10 +178,12 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                     {
                         try
                         {
-                            string ExePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                            string ConatinerPath = Path.Combine(ExePath, pContainer.ContainerFolderPath);
-                            await Task.Run(() => ZipFile.ExtractToDirectory(Path.Combine(ExePath, "BeepContainerFiles.zip"), ConatinerPath));
-
+                           string ExePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                         //   string ConatinerPath = Path.Combine(ExePath, pContainer.ContainerFolderPath);
+                         if(File.Exists(Path.Combine(ExePath, "BeepContainerFiles.zip")))
+                         {
+                                await Task.Run(() => ZipFile.ExtractToDirectory(Path.Combine(ExePath, "BeepContainerFiles.zip"), Path.Combine(ContainerFolderPath,pContainer.ContainerName)));
+                         }
                         }
                         #region "Catch for Zip file Extract"
                         catch (ArgumentNullException)
@@ -211,22 +225,22 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                             ErrorsandMesseges.Message += $"An archive entry was compressed by using a compression method that is not supported.";
                         }
                         #endregion
-                        if (ErrorsandMesseges.Flag == Errors.Ok)
-                        {
-                            //-------- Create DMService -----
-                            try
-                            {
-                                services.AddScoped<IBeepService>(s => new BeepService(services, AppContext.BaseDirectory, pContainer.ContainerName, BeepConfigType.Container));
-                                var provider = services.BuildServiceProvider();
-                                var ContianerService = provider.GetService<IBeepService>();
+                        //if (ErrorsandMesseges.Flag == Errors.Ok)
+                        //{
+                        //    //-------- Create DMService -----
+                        //    try
+                        //    {
+                        //        services.AddScoped<IBeepService>(s => new BeepService(services, AppContext.BaseDirectory, pContainer.ContainerName, BeepConfigType.Container));
+                        //        var provider = services.BuildServiceProvider();
+                        //        var ContianerService = provider.GetService<IBeepService>();
 
-                            }
-                            catch (Exception dmex)
-                            {
-                                ErrorsandMesseges.Flag = Errors.Failed;
-                                ErrorsandMesseges.Message = $"Failed to Create DMBeep Service - {dmex.Message}";
-                            }
-                        }
+                        //    }
+                        //    catch (Exception dmex)
+                        //    {
+                        //        ErrorsandMesseges.Flag = Errors.Failed;
+                        //        ErrorsandMesseges.Message = $"Failed to Create DMBeep Service - {dmex.Message}";
+                        //    }
+                        //}
 
                     }
                 }
@@ -244,6 +258,33 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             return await Task.FromResult(ErrorsandMesseges);
         }
 
-    
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~CantainerManager()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
