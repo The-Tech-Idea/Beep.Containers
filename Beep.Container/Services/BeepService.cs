@@ -18,8 +18,12 @@ namespace TheTechIdea.Beep.Container.Services
         public BeepService(IServiceCollection services, string directorypath,string containername, BeepConfigType configType)
         {
             Services = services;
-            
+            Containername=containername;
+            ConfigureationType = configType;
+            BeepDirectory= directorypath;
             Configure(directorypath, containername, configType);
+            // Adding Required Configurations
+         
         }
         bool isDev = false;
 
@@ -33,13 +37,21 @@ namespace TheTechIdea.Beep.Container.Services
         public IAssemblyHandler LLoader { get; set; }
         public IServiceCollection Services { get; }
         public IVisManager vis { get; set; }
-        public string  Containername { get; set; }
+        public string  Containername { get; private set; }
+        public BeepConfigType ConfigureationType { get; private set; }
+        public string BeepDirectory { get; private set; }
+
         CancellationTokenSource tokenSource;
         CancellationToken token;
         private bool disposedValue;
+        private bool isconfigloaded = false;
+        private bool isassembliesloaded=false;
         #endregion
         public void Configure(string directorypath , string containername, BeepConfigType configType) //ContainerBuilder builder
         {
+            Containername = containername;
+            ConfigureationType = configType;
+            BeepDirectory = directorypath;
             Erinfo = new ErrorsInfo();
             lg = new DMLogger();
             jsonLoader = new JsonLoader();
@@ -55,42 +67,77 @@ namespace TheTechIdea.Beep.Container.Services
             DMEEditor = new DMEEditor(lg, util, Erinfo, Config_editor, LLoader);
             try
             {
-                Services.AddSingleton<IErrorsInfo>(Erinfo);
-                Services.AddSingleton<IDMLogger>(lg);
-                Services.AddSingleton<IConfigEditor>(Config_editor);
-                Services.AddSingleton<IDMEEditor>(DMEEditor);
-                Services.AddSingleton<IUtil>(util);
-                Services.AddSingleton<IJsonLoader>(jsonLoader);
+                if(Services!=null)
+                {
+                    Services.AddSingleton<IErrorsInfo>(Erinfo);
+                    Services.AddSingleton<IDMLogger>(lg);
+                    Services.AddSingleton<IConfigEditor>(Config_editor);
+                    Services.AddSingleton<IDMEEditor>(DMEEditor);
+                    Services.AddSingleton<IUtil>(util);
+                    Services.AddSingleton<IJsonLoader>(jsonLoader);
+                }
+              
                 // Create Default Parameter object
                 DMEEditor.Passedarguments = new PassedArgs();
                 DMEEditor.Passedarguments.Objects = new List<ObjectItem>();
+                
+                DMEEditor.ErrorObject.Flag = Errors.Ok;
             }
             catch (Exception ex)
             {
-
+                DMEEditor.Passedarguments = new PassedArgs();
+                DMEEditor.Passedarguments.Objects = new List<ObjectItem>();
+                DMEEditor.ErrorObject.Ex = ex;
+                DMEEditor.ErrorObject.Message = ex.Message;
+                DMEEditor.ErrorObject.Flag = Errors.Failed;
                 Console.WriteLine(ex.Message);
             }
-         
-         
-            // Setup the Entry Screen 
-            // the screen has to be in one the Addin DLL's loaded by the Assembly loader
-
-
+            if(isconfigloaded==false)
+            {
+                LoadConfigurations(containername);
+                isconfigloaded = true;
+            }
+            if(isassembliesloaded==false)
+            {
+                LoadAssemblies();
+                isassembliesloaded = true;
+            }
+        }
+        public void LoadConfigurations(string containername)
+        {
+            if (isconfigloaded)
+            {
+                return;
+            }
+            isconfigloaded = true;
+            ContainerMisc.AddAllConnectionConfigurations(this);
+            ContainerMisc.AddAllDataSourceMappings(this);
+            ContainerMisc.AddAllDataSourceQueryConfigurations(this);
+            ContainerMisc.AddAllConnectionConfigurations(this);
+            ContainerMisc.CreateMainFolder(this, containername);
         }
         public void LoadAssemblies(Progress<PassedArgs> progress)
         {
+            if (isassembliesloaded)
+            {
+                return;
+            }
+            isassembliesloaded = true;
             LLoader.LoadAllAssembly(progress, token);
             Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
         }
         public void LoadAssemblies()
         {
+            if (isassembliesloaded)
+            {
+                return;
+            }
             Progress<PassedArgs> progress=new Progress<PassedArgs>()
             {
             };
             LLoader.LoadAllAssembly(progress, token);
             Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
         }
-
         public  virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -126,14 +173,12 @@ namespace TheTechIdea.Beep.Container.Services
                 disposedValue = true;
             }
         }
-
         // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         // ~BeepService()
         // {
         //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         //     Dispose(disposing: false);
         // }
-
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

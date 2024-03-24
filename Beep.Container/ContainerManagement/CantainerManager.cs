@@ -110,12 +110,21 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 if (!Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).Any())
                 {
                     IBeepContainer x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
-                    IBeepService beepservice = new BeepService(pservices, pContainerFolderPath, pContainerName, BeepConfigType.Container);
-                    x.BeepService = beepservice;
-                    Containers.Add(x);
-                   await  CreateContainerFileSystem(x);
-                    ErrorsandMesseges.Flag = Errors.Ok;
-                    ErrorsandMesseges.Message = $"Container Added";
+                    try
+                    {
+                        IBeepService beepservice = new BeepService(pservices, pContainerFolderPath, pContainerName, BeepConfigType.Container);
+                        x.BeepService = beepservice;
+                        Containers.Add(x);
+                        await CreateContainerFileSystem(x);
+                        ErrorsandMesseges.Flag = Errors.Ok;
+                        ErrorsandMesseges.Message = $"Container Added";
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorsandMesseges.Flag = Errors.Failed;
+                        ErrorsandMesseges.Message = $"Container Failed : {ex.Message}";
+                    }
+                 
                 }
                 else
                 {

@@ -1,61 +1,67 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using TheTechIdea.Beep.Container.Services;
-using TheTechIdea.Util;
 using TheTechIdea.Beep.Helpers;
 
 namespace TheTechIdea.Beep.Container
 {
-    public static class RegisterBeepinServiceCollection
+    public static class ContainerMisc
     {
-        public static IServiceCollection Services { get; private set; }
+        private static IBeepService BeepService;
+        private static IServiceCollection Services;
 
-        private static IBeepService beepService;
-        private static string BeepDataPath;
-        public static IServiceCollection RegisterBeep(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType)
+        public static string BeepDataPath { get; private set; }
+
+        public static IServiceCollection CreateBeepMapping (IBeepService beepService)
         {
-            Services = services;
-            beepService = new   BeepService(services,directorypath, containername, configType);
-            Services.AddSingleton<IBeepService>(beepService);
-            Createfolder();
-            return Services;
-        }
-        public static IServiceCollection RegisterScopedBeep(this IServiceCollection services)
-        {
-            Services = services;
-            Services.AddScoped<IBeepService>();
-            return Services;
-        }
-        public static IServiceCollection CreateBeepMapping(this IBeepService beepService)
-        {
-            if(beepService!=null) {
-                beepService.AddAllConnectionConfigurations();
-                beepService.AddAllDataSourceMappings();
-                beepService.AddAllDataSourceQueryConfigurations();
+            if (beepService != null)
+            {
+                if (beepService != null)
+                {
+                    BeepService = beepService;
+                }
+                AddAllConnectionConfigurations(beepService);
+                AddAllDataSourceMappings(beepService);
+                AddAllDataSourceQueryConfigurations(beepService);
             }
             return Services;
         }
-        public static IServiceCollection CreateMainFolder(this IBeepService beepService)
-        {
-            Createfolder();
-            return Services;
-        }
-        private static void Createfolder()
+        public static IServiceCollection CreateMainFolder (IBeepService beepService,string containername="")
         {
             if (beepService != null)
+            {
+                BeepService=beepService;
+            }
+            Createfolder(containername);
+            return Services;
+        }
+        private static void Createfolder(string containername="")
+        {
+            if (BeepService != null)
             {
                 if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
                 {
                     Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep"));
 
                 }
-                BeepDataPath= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
+                BeepDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
+            }
+            if(!string.IsNullOrEmpty(containername))
+            {
+                if (!Directory.Exists(Path.Combine(BeepDataPath, containername)))
+                {
+                    Directory.CreateDirectory(Path.Combine(BeepDataPath, containername));
+
+                }
             }
         }
-        public static void AddAllDataSourceQueryConfigurations(this IBeepService beepService)
+        public static void AddAllDataSourceQueryConfigurations (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.QueryList.AddRange(RDBMSHelper.CreateQuerySqlRepos());
         }
-        public static void AddAllConnectionConfigurations(this IBeepService beepService)
+        public static void AddAllConnectionConfigurations (IBeepService beepService)
         {
             if (beepService.DMEEditor.ConfigEditor.DataDriversClasses == null)
             {
@@ -63,138 +69,137 @@ namespace TheTechIdea.Beep.Container
             }
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.AddRange(ConnectionHelper.GetAllConnectionConfigs());
         }
-        public static void AddAllDataSourceMappings(this IBeepService beepService)
+        public static void AddAllDataSourceMappings (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataTypesMap.AddRange(DataTypeFieldMappingHelper.GetMappings());
         }
-        public static void CreateSnowFlakeConfig(this IBeepService beepService)
+        public static void CreateSnowFlakeConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateSnowFlakeConfig());
         }
-        public static void CreateHadoopConfig(this IBeepService beepService)
+        public static void CreateHadoopConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateHadoopConfig());
         }
-        public static  void CreateRedisConfig(this IBeepService beepService)
+        public static void CreateRedisConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateRedisConfig());
         }
-        public static  void CreateKafkaConfig(this IBeepService beepService)
+        public static void CreateKafkaConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateKafkaConfig());
         }
-        public static  void CreateOPCConfig(this IBeepService beepService)
+        public static void CreateOPCConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateOPCConfig());
         }
-        public static  void CreateDB2Config(this IBeepService beepService)
+        public static void CreateDB2Config (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateDB2Config());
         }
-        public static  void CreateCouchDBConfig(this IBeepService beepService)
+        public static void CreateCouchDBConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateCouchDBConfig());
         }
-        public static  void CreateVistaDBConfig(this IBeepService beepService)
+        public static void CreateVistaDBConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateVistaDBConfig());
         }
-        public static  void CreateCouchbaseConfig(this IBeepService beepService)
+        public static void CreateCouchbaseConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateCouchbaseConfig());
         }
-        public static  void CreateFirebaseConfig(this IBeepService beepService)
+        public static void CreateFirebaseConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateFirebaseConfig());
         }
-        public static  void CreateRealmConfig(this IBeepService beepService)
+        public static void CreateRealmConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateRealmConfig());
         }
-        public static  void CreatePostgreConfig(this IBeepService beepService)
+        public static void CreatePostgreConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreatePostgreConfig());
         }
-        public static  void CreateMongoDBConfig(this IBeepService beepService)
+        public static void CreateMongoDBConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateMongoDBConfig());
         }
-        public static  void CreateStackExchangeRedisConfig(this IBeepService beepService)
+        public static void CreateStackExchangeRedisConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateStackExchangeRedisConfig());
         }
-        public static  void CreateCouchbaseLiteConfig(this IBeepService beepService)
+        public static void CreateCouchbaseLiteConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateCouchbaseLiteConfig());
         }
-        public static  void CreateElasticsearchConfig(this IBeepService beepService)
+        public static void CreateElasticsearchConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateElasticsearchConfig());
         }
-        public static  void CreateSQLiteConfig(this IBeepService beepService)
+        public static void CreateSQLiteConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateSQLiteConfig());
         }
-        public static  void CreateRavenDBConfig(this IBeepService beepService)
+        public static void CreateRavenDBConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateRavenDBConfig());
         }
-        public static  void CreateCSVFileReaderConfig(this IBeepService beepService)
+        public static void CreateCSVFileReaderConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateCSVFileReaderConfig());
         }
-        public static  void CreateFirebirdConfig(this IBeepService beepService)
+        public static void CreateFirebirdConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateFirebirdConfig());
         }
-        public static  void CreateCassandraConfig(this IBeepService beepService)
+        public static void CreateCassandraConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateCassandraConfig());
         }
-        public static  void CreateMySqlConfig(this IBeepService beepService)
+        public static void CreateMySqlConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateMySqlConfig());
         }
-        public static  void CreateMySqlConnectorConfig(this IBeepService beepService)
+        public static void CreateMySqlConnectorConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateMySqlConnectorConfig());
         }
-        public static  void CreateSqlServerConfig(this IBeepService beepService)
+        public static void CreateSqlServerConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateSqlServerConfig());
         }
-        public static  void CreateSqlCompactConfig(this IBeepService beepService)
+        public static void CreateSqlCompactConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateSqlCompactConfig());
         }
-        public static  void CreateDataViewConfig(this IBeepService beepService)
+        public static void CreateDataViewConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateDataViewConfig());
         }
-        public static  void CreateCSVDataSourceConfig(this IBeepService beepService)
+        public static void CreateCSVDataSourceConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateCSVDataSourceConfig());
         }
-        public static  void CreateJsonDataSourceConfig(this IBeepService beepService)
+        public static void CreateJsonDataSourceConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateJsonDataSourceConfig());
         }
-        public static  void CreateTxtXlsCSVFileSourceConfig(this IBeepService beepService)
+        public static void CreateTxtXlsCSVFileSourceConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateTxtXlsCSVFileSourceConfig());
         }
-        public static  void CreateLiteDBDataSourceConfig(this IBeepService beepService)
+        public static void CreateLiteDBDataSourceConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateLiteDBDataSourceConfig());
         }
-        public static  void CreateOracleConfig(this IBeepService beepService)
+        public static void CreateOracleConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateOracleConfig());
         }
-        public static  void CreateDuckDBConfig(this IBeepService beepService)
+        public static void CreateDuckDBConfig (IBeepService beepService)
         {
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.Add(ConnectionHelper.CreateDuckDBConfig());
         }
-       
     }
 }
