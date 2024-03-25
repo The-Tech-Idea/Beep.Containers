@@ -8,6 +8,12 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
     {
         List<IBeepContainer> Containers { get; set; }
         ErrorsInfo ErrorsandMesseges { get; set; }
+        bool IsLogOn { get; set; }
+        bool IsDataModified { get; set; }
+        bool IsAssembliesLoaded { get; set; }
+        bool IsBeepDataOn { get; set; }
+        bool IsAppOn { get; set; }
+        bool IsDevModeOn { get; set; }
 
         Task<ErrorsInfo> AddUpdateContainer(IBeepContainer pContainer);
         Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath);

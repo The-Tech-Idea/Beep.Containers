@@ -8,6 +8,7 @@ namespace TheTechIdea.Beep.Container.Services
 {
     public interface IBeepService
     {
+        
         IConfigEditor Config_editor { get; set; }
         IDMEEditor DMEEditor { get; set; }
         IErrorsInfo Erinfo { get; set; }

@@ -76,7 +76,7 @@ namespace TheTechIdea.Beep.Container.Services
                     Services.AddSingleton<IUtil>(util);
                     Services.AddSingleton<IJsonLoader>(jsonLoader);
                 }
-              
+                
                 // Create Default Parameter object
                 DMEEditor.Passedarguments = new PassedArgs();
                 DMEEditor.Passedarguments.Objects = new List<ObjectItem>();

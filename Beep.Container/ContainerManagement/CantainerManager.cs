@@ -10,7 +10,12 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
     {
         private IServiceCollection services;
         private bool disposedValue;
-
+        public bool IsLogOn { get; set; } = false;
+        public bool IsDataModified { get; set; } = false;
+        public bool IsAssembliesLoaded { get; set; } = false;
+        public bool IsBeepDataOn { get; set; } = false;
+        public bool IsAppOn { get; set; } = false;
+        public bool IsDevModeOn { get; set; } = false;
         public CantainerManager(IServiceCollection pservices)
         {
             services = pservices;
