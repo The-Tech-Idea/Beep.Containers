@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheTechIdea.Beep.Container.Models;
 using TheTechIdea.Beep.Container.Services;
 using TheTechIdea.Util;
+using Newtonsoft.Json;
 
 namespace TheTechIdea.Beep.Container.ContainerManagement
 {
@@ -16,6 +17,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public bool IsBeepDataOn { get; set; } = false;
         public bool IsAppOn { get; set; } = false;
         public bool IsDevModeOn { get; set; } = false;
+        public string filename { get; set; }="containers.json";
         public CantainerManager(IServiceCollection pservices)
         {
             services = pservices;
@@ -27,7 +29,76 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public ErrorsInfo ErrorsandMesseges { get; set; }
 
         public string ContainerFolderPath { get; set; }
-
+        public  Task<ErrorsInfo> LoadContainers()
+        {
+            // load containers from file using system.text.json
+            // load using System.Text.Json json file into Containers = new List<IBeepContainer>();
+            try
+            {
+                if (File.Exists(filename))
+                {
+                    String JSONtxt = File.ReadAllText(filename);
+                    Containers = JsonConvert.DeserializeObject<List<IBeepContainer>>(JSONtxt, GetSettings());
+                }
+                else
+                {
+                    Containers = new List<IBeepContainer>();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorsandMesseges.Flag = Errors.Failed;
+                ErrorsandMesseges.Message = ex.Message;
+                ErrorsandMesseges.Ex = ex;
+                ErrorsandMesseges.Fucntion = "Load Containers ";
+                ErrorsandMesseges.Module = "Container  Management";
+            }
+            
+            return Task.FromResult(ErrorsandMesseges);
+        }
+        public Task<ErrorsInfo> SaveContainers()
+        {
+            // save containers to file using System.Text.Json
+            try
+            {
+                using (StreamWriter file = File.CreateText(filename))
+                {
+                   
+                        Newtonsoft.Json.JsonSerializer serializer = new JsonSerializer();
+                        serializer.NullValueHandling = NullValueHandling.Ignore;
+                        serializer.MissingMemberHandling = MissingMemberHandling.Ignore;
+                        serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                        serializer.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorsandMesseges.Flag = Errors.Failed;
+                ErrorsandMesseges.Message = ex.Message;
+                ErrorsandMesseges.Ex = ex;
+                ErrorsandMesseges.Fucntion = "Load Containers ";
+                ErrorsandMesseges.Module = "Container  Management";
+            }
+            return Task.FromResult(ErrorsandMesseges);
+        }
+        public List<IBeepContainer> GetUserContainers(string owner)
+        {
+            // get all conatiners for a user
+            return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        public IBeepContainer GetUserPrimaryContainer(string owner)
+        {
+            // get primary container for a user
+            if(Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).Any())
+            {
+                return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).FirstOrDefault();
+            }else
+                if(Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).Any())
+            {
+                return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            }else return null;
+           
+        }
         public async Task<ErrorsInfo> RemoveContainer(string pContainerName)
         {
             try
@@ -327,6 +398,21 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+        private JsonSerializerSettings GetSettings()
+
+        {
+            return new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                //CheckAdditionalContent=true,
+                //TypeNameHandling = TypeNameHandling.All,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Converters = new List<JsonConverter> { new Newtonsoft.Json.Converters.StringEnumConverter() }
+
+
+            };
         }
     }
 }

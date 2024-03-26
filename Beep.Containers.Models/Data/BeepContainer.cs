@@ -16,7 +16,53 @@ namespace TheTechIdea.Beep.Container.Models
 
             ContainerName = containername;
         }
-
+        public BeepContainer(string containername, IBeepService beepService)
+        {
+            GuidID = new Guid().ToString();
+            ContainerName = containername;
+            BeepService = beepService;
+        }
+        public BeepContainer(string containername, IBeepService beepService, string guidID)
+        {
+            GuidID = guidID;
+            ContainerName = containername;
+            BeepService = beepService;
+        }
+        public BeepContainer(string containername, IBeepService beepService, string guidID, string owner)
+        {
+            GuidID = guidID;
+            ContainerName = containername;
+            BeepService = beepService;
+            Owner = owner;
+        }
+        public BeepContainer(string containername, IBeepService beepService, string guidID, string owner, string owneremail)
+        {
+            GuidID = guidID;
+            ContainerName = containername;
+            BeepService = beepService;
+            Owner = owner;
+            OwnerEmail = owneremail;
+        }
+        public BeepContainer(string containername, IBeepService beepService, string guidID, string owner, string owneremail, string ownerGuidID)
+        {
+            GuidID = guidID;
+            ContainerName = containername;
+            BeepService = beepService;
+            Owner = owner;
+            OwnerEmail = owneremail;
+            OwnerGuidID = ownerGuidID;
+        }
+        public BeepContainer(string containername, IBeepService beepService, string guidID, string owner, string owneremail, string ownerGuidID, int ownerID)
+        {
+            GuidID = guidID;
+            ContainerName = containername;
+            BeepService = beepService;
+            Owner = owner;
+            OwnerEmail = owneremail;
+            OwnerGuidID = ownerGuidID;
+            OwnerID = ownerID;
+        }
+        public bool IsPrimary { get; set; } = false;    
         public string ContainerName { get; set; }
         public IBeepService BeepService { get; set; }
         public string GuidID { get; set; }

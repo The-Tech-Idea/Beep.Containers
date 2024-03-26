@@ -20,6 +20,7 @@ namespace TheTechIdea.Beep.Container.Models
         List<string> Users { get; set; }
          bool IsAdmin { get; set; }
          bool isActive { get;set; }
+            bool IsPrimary { get;set; }
           List<string> Modules { get; set; }  
           List<string> Services { get; set; }  
           List<string> Assemblies { get; set; }  
