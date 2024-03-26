@@ -14,10 +14,13 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         bool IsBeepDataOn { get; set; }
         bool IsAppOn { get; set; }
         bool IsDevModeOn { get; set; }
-
+        IBeepContainer GetBeepContainer(string ContainerName);
+        IBeepContainer GetBeepContainerByID(int ContainerID);
+        IBeepContainer GetBeepContainerByGuidID(string ContainerGuidID);
+       
         Task<ErrorsInfo> AddUpdateContainer(IBeepContainer pContainer);
-        Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath);
-        Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey);
+        Task<ErrorsInfo> CreateContainer(string owner,string ownerEmail,int ownerID,string ownerGuid,string pContainerName, IServiceCollection pservices, string pContainerFolderPath);
+        Task<ErrorsInfo> CreateContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey);
         Task<ErrorsInfo> CreateContainerFileSystem(IBeepContainer pContainer);
         Task<ErrorsInfo> RemoveContainer(string pContainerName);
     }

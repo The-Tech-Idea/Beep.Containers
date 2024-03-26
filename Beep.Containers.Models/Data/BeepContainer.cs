@@ -26,6 +26,24 @@ namespace TheTechIdea.Beep.Container.Models
         public List<string> Roles { get; set; } = new List<string>();
         public List<string> Privileges { get; set; } = new List<string>();
         public List<string> Products { get; set; }=new List<string>();
+        public List<string> Modules { get; set; } = new List<string>();
+        public List<string> Services { get; set; } = new List<string>();
+        public List<string> Assemblies { get; set; } = new List<string>();
+        public List<string> Configurations { get; set; } = new List<string>();
+        public List<string> DataSources { get; set; } = new List<string>();
+        public List<string> DataModels { get; set; } = new List<string>();
+        public List<string> DataEntities { get; set; } = new List<string>();
+        public List<string> DataViews { get; set; } = new List<string>();
+        public List<string> DataTransformations { get; set; } = new List<string>();
+        public List<string> DataExports { get; set; } = new List<string>();
+        public List<string> DataImports { get; set; } = new List<string>();
+        public List<string> DataConnections { get; set; } = new List<string>();
+        public List<string> DataConnectionsConfigurations { get; set; } = new List<string>();
+        public string Owner { get; set; }
+        public string OwnerEmail { get; set; }
+        public string OwnerGuidID { get; set; }
+        public int OwnerID { get; set; }
+
         
         public int ContainerID { get; set; }
         public string ContainerFolderPath { get; set; }

@@ -95,7 +95,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath=null)
+        public async Task<ErrorsInfo> CreateContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath=null)
         {
             try
             {
@@ -111,14 +111,21 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 {
                     pContainerFolderPath = ContainerFolderPath;
                 }
-                
-                if (!Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).Any())
+                IBeepContainer x = GetContainer(owner, ownerEmail, ownerID, ownerGuid, pContainerName);
+                if (x==null)
                 {
-                    IBeepContainer x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
+                    x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
                     try
                     {
                         IBeepService beepservice = new BeepService(pservices, pContainerFolderPath, pContainerName, BeepConfigType.Container);
                         x.BeepService = beepservice;
+                        x.GuidID = Guid.NewGuid().ToString();
+                        x.ContainerName = pContainerName;
+                        x.AdminUserID = owner;
+                        x.Owner = owner;
+                        x.OwnerEmail = ownerEmail;
+                        x.OwnerID = ownerID;
+                        x.OwnerGuidID = ownerGuid;
                         Containers.Add(x);
                         await CreateContainerFileSystem(x);
                         ErrorsandMesseges.Flag = Errors.Ok;
@@ -149,19 +156,28 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainer(string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey)
+        private IBeepContainer GetContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName)
+        {
+            // Get Container by all parameters owner, ownerEmail, ownerID, ownerGuid, pContainerName
+            return Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase) && p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.OwnerEmail.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase) && p.OwnerID == ownerID && p.OwnerGuidID.Equals(ownerGuid, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+            
+        }
+        public async Task<ErrorsInfo> CreateContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if Container already Exist
 
-                ErrorsandMesseges= await CreateContainer(pContainerName, pservices, pContainerFolderPath);
+                ErrorsandMesseges= await CreateContainer( owner,  ownerEmail,  ownerID,  ownerGuid, pContainerName, pservices, pContainerFolderPath);
                 if(ErrorsandMesseges.Flag==Errors.Ok)
                 {
-                    IBeepContainer x = Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                    IBeepContainer x = GetContainer(owner, ownerEmail, ownerID, ownerGuid, pContainerName); 
                     x.SecretKey = pSecretKey;
                     x.TokenKey = pTokenKey;
+                   
+
                     ErrorsandMesseges = await AddUpdateContainer(x);
                 }
 
@@ -272,6 +288,18 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             return await Task.FromResult(ErrorsandMesseges);
         }
 
+        public IBeepContainer GetBeepContainer(string ContainerName)
+        {
+            return Containers.Where(p => p.ContainerName.Equals(ContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+        }
+        public IBeepContainer GetBeepContainerByID(int ContainerID)
+        {
+            return Containers.Where(p => p.ContainerID == ContainerID).FirstOrDefault();
+        }
+        public IBeepContainer GetBeepContainerByGuidID(string ContainerGuidID)
+        {
+            return Containers.Where(p => p.GuidID == ContainerGuidID).FirstOrDefault();
+        }
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

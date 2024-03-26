@@ -47,7 +47,7 @@ namespace TheTechIdea.Beep.Container.Services
         private bool isconfigloaded = false;
         private bool isassembliesloaded=false;
         #endregion
-        public void Configure(string directorypath , string containername, BeepConfigType configType) //ContainerBuilder builder
+        public void Configure(string directorypath , string containername, BeepConfigType configType, bool AddasSingleton = false) //ContainerBuilder builder
         {
             Containername = containername;
             ConfigureationType = configType;
@@ -69,12 +69,14 @@ namespace TheTechIdea.Beep.Container.Services
             {
                 if(Services!=null)
                 {
-                    Services.AddSingleton<IErrorsInfo>(Erinfo);
-                    Services.AddSingleton<IDMLogger>(lg);
-                    Services.AddSingleton<IConfigEditor>(Config_editor);
-                    Services.AddSingleton<IDMEEditor>(DMEEditor);
-                    Services.AddSingleton<IUtil>(util);
-                    Services.AddSingleton<IJsonLoader>(jsonLoader);
+                    if(AddasSingleton==false)
+                    {
+                        LoadServicesScoped(Services);
+                    }
+                    else
+                    {
+                        LoadServicesSingleton(Services);
+                    }
                 }
                 
                 // Create Default Parameter object
@@ -102,6 +104,25 @@ namespace TheTechIdea.Beep.Container.Services
                 LoadAssemblies();
                 isassembliesloaded = true;
             }
+        }
+        public void LoadServicesScoped(IServiceCollection services)
+        {
+            services.AddKeyedScoped<IDMLogger, DMLogger>("Logger");
+            services.AddKeyedScoped<IConfigEditor, ConfigEditor>("ConfigEditor");
+            services.AddKeyedScoped<IDMEEditor, DMEEditor>("Editor");
+            services.AddKeyedScoped<IUtil, Util>("Util");
+            services.AddKeyedScoped<IJsonLoader, JsonLoader>("JsonLoader");
+            services.AddKeyedScoped<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
+            
+        }
+        public void LoadServicesSingleton(IServiceCollection services)
+        {
+            services.AddKeyedSingleton<IDMLogger, DMLogger>("Logger");
+            services.AddKeyedSingleton<IConfigEditor, ConfigEditor>("ConfigEditor");
+            services.AddKeyedSingleton<IDMEEditor, DMEEditor>("Editor");
+            services.AddKeyedSingleton<IUtil, Util>("Util");
+            services.AddKeyedSingleton<IJsonLoader, JsonLoader>("JsonLoader");
+            services.AddKeyedSingleton<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
         }
         public void LoadConfigurations(string containername)
         {

@@ -1,4 +1,5 @@
 ﻿using Beep.Vis.Module;
+using Microsoft.Extensions.DependencyInjection;
 using TheTechIdea.Beep.ConfigUtil;
 using TheTechIdea.Logger;
 using TheTechIdea.Tools;
@@ -16,12 +17,14 @@ namespace TheTechIdea.Beep.Container.Services
         IDMLogger lg { get; set; }
         IAssemblyHandler LLoader { get; set; }
         void LoadConfigurations(string containername);
-        Microsoft.Extensions.DependencyInjection.IServiceCollection Services { get; }
+        IServiceCollection Services { get; }
+        void LoadServicesScoped(IServiceCollection services);
+        void LoadServicesSingleton(IServiceCollection services);
         IUtil util { get; set; }
         string  Containername { get; }
         BeepConfigType ConfigureationType { get; }
         string BeepDirectory { get; }
-        void Configure(string directorypath, string containername, BeepConfigType configType);
+        void Configure(string directorypath, string containername, BeepConfigType configType,bool AddasSingleton=false);
         public IVisManager vis { get; set; }
         void LoadAssemblies(Progress<PassedArgs> progress);
         void LoadAssemblies();
