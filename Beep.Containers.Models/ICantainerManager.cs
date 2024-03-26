@@ -8,6 +8,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
     {
         List<IBeepContainer> Containers { get; set; }
         ErrorsInfo ErrorsandMesseges { get; set; }
+        string ContainerFolderPath { get; set; }
         bool IsLogOn { get; set; }
         bool IsDataModified { get; set; }
         bool IsAssembliesLoaded { get; set; }
@@ -17,14 +18,15 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         Task<ErrorsInfo> LoadContainers();
         Task<ErrorsInfo> SaveContainers();
         List<IBeepContainer> GetUserContainers(string owner);
+        List<IBeepContainer> GetUserContainers(int id);
         IBeepContainer GetUserPrimaryContainer(string owner);
         IBeepContainer GetBeepContainer(string ContainerName);
         IBeepContainer GetBeepContainerByID(int ContainerID);
         IBeepContainer GetBeepContainerByGuidID(string ContainerGuidID);
         Task<ErrorsInfo> AddUpdateContainer(IBeepContainer pContainer);
-        Task<ErrorsInfo> CreateContainer(string owner,string ownerEmail,int ownerID,string ownerGuid,string pContainerName, IServiceCollection pservices, string pContainerFolderPath);
-        Task<ErrorsInfo> CreateContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey);
+        Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner,string ownerEmail,int ownerID,string ownerGuid,string pContainerName, IServiceCollection pservices, string pContainerFolderPath);
+        Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey);
         Task<ErrorsInfo> CreateContainerFileSystem(IBeepContainer pContainer);
-        Task<ErrorsInfo> RemoveContainer(string pContainerName);
+        Task<ErrorsInfo> RemoveContainer(string ContainerGuidID);
     }
 }

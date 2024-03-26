@@ -4,6 +4,7 @@ namespace TheTechIdea.Beep.Container.Models
 {
     public interface IBeepContainer
     {
+        
         IBeepService BeepService { get; set; }
         string AdminUserID { get; set; }
         string ContainerFolderPath { get; set; }

@@ -23,12 +23,28 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             services = pservices;
             Containers = new List<IBeepContainer>();
             ErrorsandMesseges = new ErrorsInfo();
-            ContainerFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
+            CreateMainConatinersfolder();
         }
         public List<IBeepContainer> Containers { get; set; }
         public ErrorsInfo ErrorsandMesseges { get; set; }
 
         public string ContainerFolderPath { get; set; }
+        private  void CreateMainConatinersfolder()
+        {
+                if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep"));
+
+                }
+                string BeepDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
+            if (!Directory.Exists(Path.Combine(BeepDataPath, "Containers")))
+            {
+                Directory.CreateDirectory(Path.Combine(BeepDataPath, "Containers"));
+
+            }
+            ContainerFolderPath= Path.Combine(BeepDataPath, "Containers");
+            filename= Path.Combine(BeepDataPath, "Containers", "containers.json");
+        }
         public  Task<ErrorsInfo> LoadContainers()
         {
             // load containers from file using system.text.json
@@ -86,6 +102,11 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             // get all conatiners for a user
             return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).ToList();
         }
+        public List<IBeepContainer> GetUserContainers(int id)
+        {
+            // get all conatiners for a user
+            return Containers.Where(p => p.OwnerID == id).ToList();
+        }
         public IBeepContainer GetUserPrimaryContainer(string owner)
         {
             // get primary container for a user
@@ -99,13 +120,13 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }else return null;
            
         }
-        public async Task<ErrorsInfo> RemoveContainer(string pContainerName)
+        public async Task<ErrorsInfo> RemoveContainer(string ContainerGuidID)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if user already Exist
-                var t = Task.Run<IBeepContainer>(() => Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault());
+                var t = Task.Run<IBeepContainer>(() => Containers.Where(p => p.GuidID.Equals(ContainerGuidID, StringComparison.OrdinalIgnoreCase)).FirstOrDefault());
                 t.Wait();
 
                 if (t.Result == null)
@@ -166,7 +187,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath=null)
+        public async Task<ErrorsInfo> CreateContainer(string ContainerGuidID,string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath=null)
         {
             try
             {
@@ -182,7 +203,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 {
                     pContainerFolderPath = ContainerFolderPath;
                 }
-                IBeepContainer x = GetContainer(owner, ownerEmail, ownerID, ownerGuid, pContainerName);
+                IBeepContainer x = GetContainer( ContainerGuidID, owner, ownerEmail, ownerID, ownerGuid, pContainerName);
                 if (x==null)
                 {
                     x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
@@ -197,6 +218,10 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                         x.OwnerEmail = ownerEmail;
                         x.OwnerID = ownerID;
                         x.OwnerGuidID = ownerGuid;
+                        x.ContainerFolderPath = pContainerFolderPath;
+                        x.IsPrimary = true;
+                        x.isActive = true;
+                        x.GuidID = ContainerGuidID;
                         Containers.Add(x);
                         await CreateContainerFileSystem(x);
                         ErrorsandMesseges.Flag = Errors.Ok;
@@ -227,24 +252,24 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        private IBeepContainer GetContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName)
+        private IBeepContainer GetContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName)
         {
             // Get Container by all parameters owner, ownerEmail, ownerID, ownerGuid, pContainerName
             return Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase) && p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.OwnerEmail.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase) && p.OwnerID == ownerID && p.OwnerGuidID.Equals(ownerGuid, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             
         }
-        public async Task<ErrorsInfo> CreateContainer(string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey)
+        public async Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if Container already Exist
 
-                ErrorsandMesseges= await CreateContainer( owner,  ownerEmail,  ownerID,  ownerGuid, pContainerName, pservices, pContainerFolderPath);
+                ErrorsandMesseges= await CreateContainer( ContainerGuidID, owner,  ownerEmail,  ownerID,  ownerGuid, pContainerName, pservices, pContainerFolderPath);
                 if(ErrorsandMesseges.Flag==Errors.Ok)
                 {
-                    IBeepContainer x = GetContainer(owner, ownerEmail, ownerID, ownerGuid, pContainerName); 
+                    IBeepContainer x = GetContainer(ContainerGuidID, owner, ownerEmail, ownerID, ownerGuid, pContainerName); 
                     x.SecretKey = pSecretKey;
                     x.TokenKey = pTokenKey;
                    
