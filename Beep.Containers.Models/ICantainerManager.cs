@@ -6,6 +6,10 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 {
     public interface ICantainerManager
     {
+        IBeepContainer CurrentContainer { get; set; }
+        bool IsContainerActive { get; set; }
+        bool IsContainerLoaded { get; set; } 
+        bool IsContainerCreated { get; set; } 
         List<IBeepContainer> Containers { get; set; }
         ErrorsInfo ErrorsandMesseges { get; set; }
         string ContainerFolderPath { get; set; }
@@ -19,6 +23,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         Task<ErrorsInfo> SaveContainers();
         List<IBeepContainer> GetUserContainers(string owner);
         List<IBeepContainer> GetUserContainers(int id);
+        List<IBeepContainer> GetUserContainersByGuiID(string guidid);
         IBeepContainer GetUserPrimaryContainer(string owner);
         IBeepContainer GetBeepContainer(string ContainerName);
         IBeepContainer GetBeepContainerByID(int ContainerID);

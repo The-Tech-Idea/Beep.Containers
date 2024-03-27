@@ -39,6 +39,8 @@ namespace TheTechIdea.Beep.Container.Models
           string OwnerEmail { get; set; }
           string OwnerGuidID { get; set; }
           int OwnerID { get; set; }
-
+        bool IsContainerActive { get; set; }
+        bool IsContainerLoaded { get; set; }
+        bool IsContainerCreated { get; set; }
     }
 }

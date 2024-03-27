@@ -9,8 +9,19 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 {
     public  class CantainerManager : ICantainerManager,IDisposable
     {
+        public CantainerManager()
+        {
+
+            
+        }
         private IServiceCollection services;
         private bool disposedValue;
+
+        public IBeepContainer CurrentContainer { get; set; }
+        public bool IsContainerActive { get; set; } = false;
+        public bool IsContainerLoaded { get; set; } = false;
+        public bool IsContainerCreated { get; set; } = false;
+
         public bool IsLogOn { get; set; } = false;
         public bool IsDataModified { get; set; } = false;
         public bool IsAssembliesLoaded { get; set; } = false;
@@ -23,13 +34,42 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             services = pservices;
             Containers = new List<IBeepContainer>();
             ErrorsandMesseges = new ErrorsInfo();
-            CreateMainConatinersfolder();
+            CreateMainContainersfolder();
         }
-        public List<IBeepContainer> Containers { get; set; }
-        public ErrorsInfo ErrorsandMesseges { get; set; }
 
-        public string ContainerFolderPath { get; set; }
-        private  void CreateMainConatinersfolder()
+        private List<IBeepContainer> _containers;
+        public List<IBeepContainer> Containers
+        {
+            get
+            {
+                if (_containers == null)
+                {
+                    _containers = new List<IBeepContainer>();
+                }
+                return _containers;
+            }
+            set
+            {
+                _containers = value;
+            }
+        }
+
+        public ErrorsInfo ErrorsandMesseges { get; set; } = new ErrorsInfo();
+        string _containerFolderPath = string.Empty;
+        public string ContainerFolderPath 
+        { get { 
+                if (string.IsNullOrEmpty(_containerFolderPath))
+                {
+                   CreateMainContainersfolder(); 
+                 } 
+                 return _containerFolderPath;
+              }
+          set 
+              {
+                _containerFolderPath = value;
+              } 
+        }
+        private  void CreateMainContainersfolder()
         {
                 if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
                 {
@@ -42,7 +82,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 Directory.CreateDirectory(Path.Combine(BeepDataPath, "Containers"));
 
             }
-            ContainerFolderPath= Path.Combine(BeepDataPath, "Containers");
+            _containerFolderPath = Path.Combine(BeepDataPath, "Containers");
             filename= Path.Combine(BeepDataPath, "Containers", "containers.json");
         }
         public  Task<ErrorsInfo> LoadContainers()
@@ -100,24 +140,60 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public List<IBeepContainer> GetUserContainers(string owner)
         {
             // get all conatiners for a user
+            if(Containers==null)
+            {
+                Containers = new List<IBeepContainer>();
+            }
             return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        public List<IBeepContainer> GetUserContainersByGuiID(string guidid)
+        {
+            // get all conatiners for a user
+            if (Containers == null)
+            {
+                Containers = new List<IBeepContainer>();
+            }
+            return Containers.Where(p => p.OwnerGuidID.Equals(guidid, StringComparison.OrdinalIgnoreCase)).ToList();
         }
         public List<IBeepContainer> GetUserContainers(int id)
         {
+            if (Containers == null)
+            {
+                Containers = new List<IBeepContainer>();
+            }
             // get all conatiners for a user
             return Containers.Where(p => p.OwnerID == id).ToList();
         }
         public IBeepContainer GetUserPrimaryContainer(string owner)
         {
-            // get primary container for a user
-            if(Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).Any())
+            if (Containers == null)
             {
-                return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).FirstOrDefault();
+                Containers = new List<IBeepContainer>();
+            }
+            // get primary container for a user
+            if (Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).Any())
+            {
+                CurrentContainer = Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).FirstOrDefault();
+                IsContainerActive = true;
+                IsContainerCreated = true;
+                IsContainerLoaded = true;
+                return CurrentContainer;
             }else
                 if(Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).Any())
             {
-                return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-            }else return null;
+                IsContainerActive = true;
+                IsContainerCreated = true;
+                IsContainerLoaded = true;
+                CurrentContainer = Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                return CurrentContainer;
+              
+            }
+            CurrentContainer= null;
+            IsContainerActive = false;
+            IsContainerCreated = false;
+            IsContainerLoaded = false;
+
+            return null;
            
         }
         public async Task<ErrorsInfo> RemoveContainer(string ContainerGuidID)
@@ -383,7 +459,6 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-
         public IBeepContainer GetBeepContainer(string ContainerName)
         {
             return Containers.Where(p => p.ContainerName.Equals(ContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();

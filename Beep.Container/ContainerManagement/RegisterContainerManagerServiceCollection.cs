@@ -19,15 +19,16 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             Services = services;
             cantainerManager = new CantainerManager(services);
             services.AddSingleton<ICantainerManager>(cantainerManager);
+            services.AddScoped<IBeepContainer, BeepContainer>();
             return services;
         }
         public static IServiceCollection AddBeepScopedContainerManager(this IServiceCollection services)
         {
             Services = services;
             //cantainerManager = new CantainerManager(services);
-            services.AddKeyedScoped<ICantainerManager>("ConatinerManager");
-            services.AddKeyedScoped<IBeepContainer>("Conatiner");
-            services.AddKeyedScoped<IBeepService>("Service");
+            services.AddScoped<ICantainerManager,CantainerManager>();
+            services.AddScoped<IBeepContainer,BeepContainer>();
+            services.AddScoped<IBeepService,BeepService>();
             return services;
         }
 

@@ -62,6 +62,9 @@ namespace TheTechIdea.Beep.Container.Models
             OwnerGuidID = ownerGuidID;
             OwnerID = ownerID;
         }
+        public bool IsContainerActive { get; set; } = false;
+        public bool IsContainerLoaded { get; set; } = false;
+        public bool IsContainerCreated { get; set; } = false;
         public bool IsPrimary { get; set; } = false;    
         public string ContainerName { get; set; }
         public IBeepService BeepService { get; set; }
