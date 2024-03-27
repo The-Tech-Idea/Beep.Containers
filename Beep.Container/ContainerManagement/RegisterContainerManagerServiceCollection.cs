@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TheTechIdea.Beep.Container.Models;
 using TheTechIdea.Beep.Container.Services;
 using TheTechIdea.Util;
 
@@ -20,7 +21,15 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             services.AddSingleton<ICantainerManager>(cantainerManager);
             return services;
         }
-       
-      
+        public static IServiceCollection AddBeepScopedContainerManager(this IServiceCollection services)
+        {
+            Services = services;
+            //cantainerManager = new CantainerManager(services);
+            services.AddKeyedScoped<ICantainerManager>("ConatinerManager");
+            services.AddKeyedScoped<IBeepContainer>("Conatiner");
+            services.AddKeyedScoped<IBeepService>("Service");
+            return services;
+        }
+
     }
 }
