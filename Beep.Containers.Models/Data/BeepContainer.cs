@@ -101,6 +101,7 @@ namespace TheTechIdea.Beep.Container.Models
         public string TokenKey { get; set; }
         public bool IsAdmin { get; set; }=false;
         public bool isActive { get; set; } = true;
+       
 
     }
 }
