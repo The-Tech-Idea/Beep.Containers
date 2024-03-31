@@ -11,10 +11,10 @@ namespace TheTechIdea.Beep.Container
 
         private static IBeepService beepService;
         private static string BeepDataPath;
-        public static IServiceCollection RegisterBeep(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType)
+        public static IServiceCollection RegisterBeep(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = true)
         {
             Services = services;
-            beepService = new   BeepService(services,directorypath, containername, configType);
+            beepService = new   BeepService(services,directorypath, containername, configType, AddasSingleton );
             Services.AddSingleton<IBeepService>(beepService);
             Createfolder();
             return Services;

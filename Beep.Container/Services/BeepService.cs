@@ -15,13 +15,13 @@ namespace TheTechIdea.Beep.Container.Services
         {
             
         }
-        public BeepService(IServiceCollection services, string directorypath,string containername, BeepConfigType configType)
+        public BeepService(IServiceCollection services, string directorypath,string containername, BeepConfigType configType, bool AddasSingleton = false)
         {
             Services = services;
             Containername=containername;
             ConfigureationType = configType;
             BeepDirectory= directorypath;
-            Configure(directorypath, containername, configType);
+            Configure(directorypath, containername, configType,AddasSingleton);
             // Adding Required Configurations
          
         }
