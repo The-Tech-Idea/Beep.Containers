@@ -33,7 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="1.0.127" />
-    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.95" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.96" />
   </ItemGroup>
 	
 </Project>
