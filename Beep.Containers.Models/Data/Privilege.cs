@@ -1,7 +1,7 @@
 ﻿
 using TheTechIdea.Beep.Editor;
 
-namespace TheTechIdea.Beep.Container.Models.UserManagement
+namespace TheTechIdea.Beep.Container.Model.UserManagement
 {
     public class Privilege: Entity
     {

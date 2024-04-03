@@ -1,7 +1,7 @@
-﻿using TheTechIdea.Beep.Container.Models;
+﻿using TheTechIdea.Beep.Container.Model;
 using TheTechIdea.Beep.Editor;
 
-namespace TheTechIdea.Beep.Container.UserManagement
+namespace TheTechIdea.Beep.Container.Model.UserManagement
 {
     public class ApplicationUser : Entity, IApplicationUser
     {

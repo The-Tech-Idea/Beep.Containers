@@ -1,6 +1,6 @@
-﻿using TheTechIdea.Beep.Container.Models;
+﻿using TheTechIdea.Beep.Container.Model;
 
-namespace TheTechIdea.Beep.Container.Models
+namespace TheTechIdea.Beep.Container.Model
 {
     public interface IApplicationUser
     {
