@@ -121,7 +121,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 {
                    
                         Newtonsoft.Json.JsonSerializer serializer = new JsonSerializer();
-                        serializer.NullValueHandling = NullValueHandling.Ignore;
+                        serializer.NullValueHandling = NullValueHandling.Include;
                         serializer.MissingMemberHandling = MissingMemberHandling.Ignore;
                         serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                         serializer.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
@@ -504,7 +504,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         {
             return new JsonSerializerSettings
             {
-                NullValueHandling = NullValueHandling.Ignore,
+                NullValueHandling = NullValueHandling.Include,
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 //CheckAdditionalContent=true,
                 //TypeNameHandling = TypeNameHandling.All,

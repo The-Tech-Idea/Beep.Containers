@@ -28,6 +28,7 @@ namespace TheTechIdea.Beep.Container.Services
         public IVisManager vis { get; set; }
         void LoadAssemblies(Progress<PassedArgs> progress);
         void LoadAssemblies();
+        void Dispose();
 
     }
 }

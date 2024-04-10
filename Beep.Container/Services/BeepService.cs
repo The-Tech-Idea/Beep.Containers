@@ -99,11 +99,11 @@ namespace TheTechIdea.Beep.Container.Services
                 LoadConfigurations(containername);
                 isconfigloaded = true;
             }
-            if(isassembliesloaded==false)
-            {
-                LoadAssemblies();
-                isassembliesloaded = true;
-            }
+            //if(isassembliesloaded==false)
+            //{
+            //    LoadAssemblies();
+            //    isassembliesloaded = true;
+            //}
         }
         public void LoadServicesScoped(IServiceCollection services)
         {
