@@ -134,7 +134,6 @@ namespace TheTechIdea.Beep.Container.Services
             ContainerMisc.AddAllConnectionConfigurations(this);
             ContainerMisc.AddAllDataSourceMappings(this);
             ContainerMisc.AddAllDataSourceQueryConfigurations(this);
-            ContainerMisc.AddAllConnectionConfigurations(this);
             ContainerMisc.CreateMainFolder(this, containername);
         }
         public void LoadAssemblies(Progress<PassedArgs> progress)
