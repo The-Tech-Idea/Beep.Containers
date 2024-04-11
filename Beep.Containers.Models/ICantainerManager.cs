@@ -33,5 +33,6 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, IServiceCollection pservices, string pContainerFolderPath, string pSecretKey, string pTokenKey);
         Task<ErrorsInfo> CreateContainerFileSystem(IBeepContainer pContainer);
         Task<ErrorsInfo> RemoveContainer(string ContainerGuidID);
+        void Dispose();
     }
 }
