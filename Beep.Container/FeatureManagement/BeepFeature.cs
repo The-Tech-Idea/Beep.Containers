@@ -26,7 +26,7 @@ namespace TheTechIdea.Beep.Container.FeatureManagement
         public string AssemblyName { get; set; }
         public string AssemblyDescription { get; set; }
         public string AssemblyVersion { get; set; } = string.Empty;
-        public IBeepContainer Container { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IBeepContainer Container { get  ; set  ; }
 
         public BeepFeature() { }
         public BeepFeature(string name)
