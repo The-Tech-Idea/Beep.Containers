@@ -67,9 +67,9 @@ namespace TheTechIdea.Beep.Container.Services
             DMEEditor = new DMEEditor(lg, util, Erinfo, Config_editor, LLoader);
             try
             {
-                if(Services!=null)
+                if (Services != null)
                 {
-                    if(AddasSingleton==false)
+                    if (AddasSingleton == false)
                     {
                         LoadServicesScoped(Services);
                     }
@@ -78,7 +78,7 @@ namespace TheTechIdea.Beep.Container.Services
                         LoadServicesSingleton(Services);
                     }
                 }
-                
+
                 // Create Default Parameter object
                 DMEEditor.Passedarguments = new PassedArgs();
                 DMEEditor.Passedarguments.Objects = new List<ObjectItem>();
@@ -117,12 +117,12 @@ namespace TheTechIdea.Beep.Container.Services
         }
         public void LoadServicesSingleton(IServiceCollection services)
         {
-            services.AddKeyedSingleton<IDMLogger, DMLogger>("Logger");
-            services.AddKeyedSingleton<IConfigEditor, ConfigEditor>("ConfigEditor");
-            services.AddKeyedSingleton<IDMEEditor, DMEEditor>("Editor");
-            services.AddKeyedSingleton<IUtil, Util>("Util");
-            services.AddKeyedSingleton<IJsonLoader, JsonLoader>("JsonLoader");
-            services.AddKeyedSingleton<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
+            services.AddSingleton<IDMLogger>(lg);
+            services.AddSingleton<IConfigEditor>(Config_editor);
+            services.AddSingleton<IDMEEditor>(DMEEditor);
+            services.AddSingleton<IUtil>(util);
+            services.AddSingleton<IJsonLoader>(jsonLoader);
+            services.AddSingleton<IAssemblyHandler>(LLoader);
         }
         public void LoadConfigurations(string containername)
         {
@@ -134,7 +134,8 @@ namespace TheTechIdea.Beep.Container.Services
             ContainerMisc.AddAllConnectionConfigurations(this);
             ContainerMisc.AddAllDataSourceMappings(this);
             ContainerMisc.AddAllDataSourceQueryConfigurations(this);
-            ContainerMisc.CreateMainFolder(this, containername);
+            ContainerMisc.CreateMainFolder();
+            ContainerMisc.CreateContainerfolder(containername);
         }
         public void LoadAssemblies(Progress<PassedArgs> progress)
         {
