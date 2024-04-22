@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TheTechIdea.Beep.Container.Services;
 using TheTechIdea.Util;
-using TheTechIdea.Beep.Helpers;
+
 
 namespace TheTechIdea.Beep.Container
 {
@@ -16,7 +16,7 @@ namespace TheTechIdea.Beep.Container
             Services = services;
             beepService = new   BeepService(services,directorypath, containername, configType, AddasSingleton );
             Services.AddSingleton<IBeepService>(beepService);
-            ContainerMisc.CreateMainFolder();
+            BeepDataPath= ContainerMisc.CreateMainFolder();
             return Services;
         }
         public static IServiceCollection RegisterScopedBeep(this IServiceCollection services)
@@ -34,12 +34,16 @@ namespace TheTechIdea.Beep.Container
             }
             return Services;
         }
-        public static IServiceCollection CreateMainFolder()
+        public static string GetMainFolder()
         {
-            ContainerMisc.CreateMainFolder();
-            return Services;
+            BeepDataPath= ContainerMisc.CreateMainFolder();
+            return BeepDataPath;
         }
-   
-       
+        public static IBeepService GetBeepService(this IDMEEditor dmeEditor)
+        {
+
+            return beepService;
+        }
+
     }
 }

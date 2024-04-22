@@ -29,7 +29,7 @@ namespace TheTechIdea.Beep.Container
             }
             return Services;
         }
-        public static IServiceCollection CreateMainFolder ( )
+        public static string CreateMainFolder (this IBeepService beepService)
         {
                 if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
                 {
@@ -38,7 +38,18 @@ namespace TheTechIdea.Beep.Container
                 }
                 BeepDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
           
-            return Services;
+            return BeepDataPath;
+        }
+        public static string CreateMainFolder()
+        {
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep"));
+
+            }
+            BeepDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
+
+            return BeepDataPath;
         }
         public static string CreateContainerfolder(string containername="")
         {
@@ -56,9 +67,8 @@ namespace TheTechIdea.Beep.Container
         public static string CreateAppfolder(string containername ,string appfolder)
         {
             string appfolderpath = "";
-            if (BeepService != null)
-            {
-
+          
+        
                 if (!string.IsNullOrEmpty(containername))
                 {
                     CreateContainerfolder(containername);
@@ -72,7 +82,26 @@ namespace TheTechIdea.Beep.Container
                     }
                     
                 }
-            }
+         
+            return appfolderpath;
+        }
+        public static string CreateAppfolder( string appfolder)
+        {
+            string appfolderpath = "";
+
+
+                CreateMainFolder();
+                if (!string.IsNullOrEmpty(appfolder))
+                {
+                    if (!Directory.Exists(Path.Combine(BeepDataPath, appfolder)))
+                    {
+                        Directory.CreateDirectory(Path.Combine(BeepDataPath, appfolder));
+                        appfolderpath = Path.Combine(BeepDataPath, appfolder);
+                    }
+                }
+
+        
+
             return appfolderpath;
         }
         public static void AddAllDataSourceQueryConfigurations (this IBeepService beepService)
