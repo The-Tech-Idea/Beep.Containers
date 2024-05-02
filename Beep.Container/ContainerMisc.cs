@@ -95,10 +95,19 @@ namespace TheTechIdea.Beep.Container
                 {
                     if (!Directory.Exists(Path.Combine(BeepDataPath, appfolder)))
                     {
-                        Directory.CreateDirectory(Path.Combine(BeepDataPath, appfolder));
-                        appfolderpath = Path.Combine(BeepDataPath, appfolder);
+                        try
+                        {
+                            Directory.CreateDirectory(Path.Combine(BeepDataPath, appfolder));
+                        }
+                        catch (Exception ex)
+                        {
+                        return string.Empty;
+
+                         }
+
                     }
-                }
+                appfolderpath = Path.Combine(BeepDataPath, appfolder);
+            }
 
         
 
