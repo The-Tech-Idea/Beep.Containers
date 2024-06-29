@@ -14,7 +14,10 @@ namespace TheTechIdea.Beep.Container
 
         public static string BeepDataPath { get; private set; }
         public static string ContainerDataPath { get; private set; }
+       
+        #region "Container Methods"
 
+        #endregion
         public static IServiceCollection CreateBeepMapping (this IBeepService beepService)
         {
             if (beepService != null)
