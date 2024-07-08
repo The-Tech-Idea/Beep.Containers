@@ -137,6 +137,13 @@ namespace TheTechIdea.Beep.Container.Services
             ContainerMisc.CreateMainFolder();
             ContainerMisc.CreateContainerfolder(containername);
         }
+        public async Task LoadAssembliesAsync(Progress<PassedArgs> progress)
+        {
+            await Task.Run(() =>
+            {
+                LoadAssemblies(progress);
+            });
+        }
         public void LoadAssemblies(Progress<PassedArgs> progress)
         {
             if (isassembliesloaded)

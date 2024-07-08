@@ -27,6 +27,7 @@ namespace TheTechIdea.Beep.Container.Services
         void Configure(string directorypath, string containername, BeepConfigType configType,bool AddasSingleton=false);
         public IVisManager vis { get; set; }
         void LoadAssemblies(Progress<PassedArgs> progress);
+        Task LoadAssembliesAsync(Progress<PassedArgs> progress);
         void LoadAssemblies();
         void Dispose();
 
