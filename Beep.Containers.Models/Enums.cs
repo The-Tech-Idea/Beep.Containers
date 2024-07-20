@@ -16,4 +16,8 @@ namespace TheTechIdea.Beep.Container.Model
     {
         Singleton,Scoped,Transient
     }
+    public enum EnvironmentType
+    {
+        Development,Production,Test,Staging,QA,Training,Custom,NotSet,Live,LiveTest,LiveProduction
+    }
 }

@@ -2,6 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Data;
 using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.Container.Model;
+using TheTechIdea.Beep.Container.Model.Data;
+using TheTechIdea.Beep.FileManager;
 using TheTechIdea.Logger;
 using TheTechIdea.Tools;
 using TheTechIdea.Util;
@@ -165,6 +168,48 @@ namespace TheTechIdea.Beep.Container.Services
             };
             LLoader.LoadAllAssembly(progress, token);
             Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
+        }
+        public Dictionary<EnvironmentType, IBeepEnvironment> Environments { get; set; }
+        public void LoadEnvironments()
+        {
+            // Load Environments from IBeepEnvironment in Environments
+            if(string.IsNullOrEmpty(ContainerMisc.ContainerDataPath))
+            {
+                ContainerMisc.CreateContainerfolder(Containername);
+            }
+            
+                string envpath = Path.Combine(BeepDirectory, "Environments");
+                if (Directory.Exists(envpath))
+                {
+                    string[] files = Directory.GetFiles(envpath, "*.json");
+                    foreach (string file in files)
+                    {
+                        string json = File.ReadAllText(file);
+                        IBeepEnvironment env = jsonLoader.DeserializeSingleObjectFromjsonString<IBeepEnvironment>(json);
+                        Environments.Add(env.EnvironmentType, env);
+                    }
+                }
+            
+
+        }
+        public void SaveEnvironments()
+        {
+            // Save Environments from IBeepEnvironment in Environments
+            if (string.IsNullOrEmpty(ContainerMisc.ContainerDataPath))
+            {
+                ContainerMisc.CreateContainerfolder(Containername);
+            }
+            string envpath = Path.Combine(BeepDirectory, "Environments");
+            if (Directory.Exists(envpath))
+            {
+                // save each environment in a json file
+                foreach (KeyValuePair<EnvironmentType, IBeepEnvironment> env in Environments)
+                {
+                    string json = jsonLoader.SerializeObject(env.Value);
+                    File.WriteAllText(Path.Combine(envpath, env.Value.EnvironmentName + ".json"), json);
+                }
+                
+            }
         }
         public  virtual void Dispose(bool disposing)
         {

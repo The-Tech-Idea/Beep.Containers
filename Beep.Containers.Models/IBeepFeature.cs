@@ -21,6 +21,7 @@ namespace TheTechIdea.Beep.Container.Model
         string Name { get; set; }
         string Version { get; set; }
 
+     
         IBeepContainer Container { get; set; }
 
         IErrorsInfo AddAsService(IServiceCollection services, ServiceScope scope = ServiceScope.Singleton);

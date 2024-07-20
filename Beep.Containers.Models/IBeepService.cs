@@ -1,6 +1,7 @@
 ﻿using Beep.Vis.Module;
 using Microsoft.Extensions.DependencyInjection;
 using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.Container.Model;
 using TheTechIdea.Logger;
 using TheTechIdea.Tools;
 using TheTechIdea.Util;
@@ -9,7 +10,7 @@ namespace TheTechIdea.Beep.Container.Services
 {
     public interface IBeepService
     {
-        
+      
         IConfigEditor Config_editor { get; set; }
         IDMEEditor DMEEditor { get; set; }
         IErrorsInfo Erinfo { get; set; }
@@ -29,6 +30,10 @@ namespace TheTechIdea.Beep.Container.Services
         void LoadAssemblies(Progress<PassedArgs> progress);
         Task LoadAssembliesAsync(Progress<PassedArgs> progress);
         void LoadAssemblies();
+
+        Dictionary<EnvironmentType, IBeepEnvironment> Environments { get; set; }
+        void LoadEnvironments();
+        void SaveEnvironments();
         void Dispose();
 
     }
