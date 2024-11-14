@@ -3,9 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Data;
 using TheTechIdea.Beep.ConfigUtil;
 using TheTechIdea.Beep.Container.Model;
-using TheTechIdea.Logger;
-using TheTechIdea.Tools;
-using TheTechIdea.Util;
+
+using TheTechIdea.Beep.Tools;
+using TheTechIdea.Beep.Utilities;
+using TheTechIdea.Beep.Addin;
+using TheTechIdea.Beep.Editor;
+
+using TheTechIdea.Beep.Logger;
+
+
 
 namespace TheTechIdea.Beep.Container.Services
 {

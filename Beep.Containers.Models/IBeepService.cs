@@ -1,10 +1,13 @@
 ﻿using TheTechIdea.Beep.Vis.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using TheTechIdea.Beep.ConfigUtil;
+
 using TheTechIdea.Beep.Container.Model;
-using TheTechIdea.Logger;
-using TheTechIdea.Tools;
-using TheTechIdea.Util;
+using TheTechIdea.Beep.Logger;
+using TheTechIdea.Beep.Tools;
+using TheTechIdea.Beep.Utilities;
+using TheTechIdea.Beep.Addin;
+using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.ConfigUtil;
 
 namespace TheTechIdea.Beep.Container.Services
 {

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TheTechIdea.Beep.Container.Services;
+using TheTechIdea.Beep.DriversConfigurations;
 using TheTechIdea.Beep.Helpers;
 
 namespace TheTechIdea.Beep.Container
@@ -124,7 +125,7 @@ namespace TheTechIdea.Beep.Container
         {
             if (beepService.DMEEditor.ConfigEditor.DataDriversClasses == null)
             {
-                beepService.DMEEditor.ConfigEditor.DataDriversClasses = new List<DataManagementModels.DriversConfigurations.ConnectionDriversConfig>();
+                beepService.DMEEditor.ConfigEditor.DataDriversClasses = new List<ConnectionDriversConfig>();
             }
             beepService.DMEEditor.ConfigEditor.DataDriversClasses.AddRange(ConnectionHelper.GetAllConnectionConfigs());
         }

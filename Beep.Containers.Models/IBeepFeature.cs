@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TheTechIdea.Util;
+using TheTechIdea.Beep.Addin;
+using TheTechIdea.Beep.ConfigUtil;
 
 namespace TheTechIdea.Beep.Container.Model
 {
