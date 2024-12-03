@@ -33,7 +33,7 @@ namespace TheTechIdea.Beep.Container.Services
         void LoadAssemblies(Progress<PassedArgs> progress);
         Task LoadAssembliesAsync(Progress<PassedArgs> progress);
         void LoadAssemblies();
-
+        void ConfigureForDesignTime();
         Dictionary<EnvironmentType, IBeepEnvironment> Environments { get; set; }
         void LoadEnvironments();
         void SaveEnvironments();

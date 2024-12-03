@@ -10,6 +10,7 @@ using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.Editor;
 
 using TheTechIdea.Beep.Logger;
+using System.ComponentModel;
 
 
 
@@ -20,7 +21,10 @@ namespace TheTechIdea.Beep.Container.Services
 
         public BeepService()
         {
-            
+            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                ConfigureForDesignTime();
+            }
         }
         public BeepService(IServiceCollection services, string directorypath,string containername, BeepConfigType configType, bool AddasSingleton = false)
         {
@@ -53,7 +57,19 @@ namespace TheTechIdea.Beep.Container.Services
         private bool disposedValue;
         private bool isconfigloaded = false;
         private bool isassembliesloaded=false;
+        private bool isDesignTime;
         #endregion
+        public void ConfigureForDesignTime()
+        {
+            try
+            {
+                Configure(AppContext.BaseDirectory, "DesignTimeContainer", BeepConfigType.DataConnector, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Design-time configuration failed: {ex.Message}");
+            }
+        }
         public void Configure(string directorypath , string containername, BeepConfigType configType, bool AddasSingleton = false) //ContainerBuilder builder
         {
             Containername = containername;
