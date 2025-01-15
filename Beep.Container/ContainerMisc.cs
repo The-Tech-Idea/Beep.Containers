@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text;
 using TheTechIdea.Beep.Container.Services;
 using TheTechIdea.Beep.DriversConfigurations;
@@ -15,7 +16,10 @@ namespace TheTechIdea.Beep.Container
 
         public static string BeepDataPath { get; private set; }
         public static string ContainerDataPath { get; private set; }
-       
+        private static bool mappingcreated = false;
+        private static bool connectioncreated = false;
+        private static bool datasourcecreated = false;
+
         #region "Container Methods"
 
         #endregion
@@ -119,10 +123,12 @@ namespace TheTechIdea.Beep.Container
         }
         public static void AddAllDataSourceQueryConfigurations (this IBeepService beepService)
         {
+            if(datasourcecreated) return;
             beepService.DMEEditor.ConfigEditor.QueryList.AddRange(RDBMSHelper.CreateQuerySqlRepos());
         }
         public static void AddAllConnectionConfigurations (this IBeepService beepService)
         {
+            if (connectioncreated) return;
             if (beepService.DMEEditor.ConfigEditor.DataDriversClasses == null)
             {
                 beepService.DMEEditor.ConfigEditor.DataDriversClasses = new List<ConnectionDriversConfig>();
@@ -131,6 +137,7 @@ namespace TheTechIdea.Beep.Container
         }
         public static void AddAllDataSourceMappings (this IBeepService beepService)
         {
+            if(mappingcreated) return;
             beepService.DMEEditor.ConfigEditor.DataTypesMap.AddRange(DataTypeFieldMappingHelper.GetMappings());
         }
       

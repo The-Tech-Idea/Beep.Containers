@@ -1,4 +1,4 @@
-﻿using TheTechIdea.Beep.Vis.Modules;
+﻿
 using Microsoft.Extensions.DependencyInjection;
 
 using TheTechIdea.Beep.Container.Model;
@@ -8,6 +8,7 @@ using TheTechIdea.Beep.Utilities;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.Vis.Modules;
 
 namespace TheTechIdea.Beep.Container.Services
 {
@@ -29,7 +30,7 @@ namespace TheTechIdea.Beep.Container.Services
         BeepConfigType ConfigureationType { get; }
         string BeepDirectory { get; }
         void Configure(string directorypath, string containername, BeepConfigType configType,bool AddasSingleton=false);
-        public IVisManager vis { get; set; }
+        public IAppManager vis { get; set; }
         void LoadAssemblies(Progress<PassedArgs> progress);
         Task LoadAssembliesAsync(Progress<PassedArgs> progress);
         void LoadAssemblies();

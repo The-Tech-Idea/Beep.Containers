@@ -47,7 +47,7 @@ namespace TheTechIdea.Beep.Container.Services
         public IJsonLoader jsonLoader { get; set; }
         public IAssemblyHandler LLoader { get; set; }
         public IServiceCollection Services { get; }
-        public IVisManager vis { get; set; }
+        public IAppManager vis { get; set; }
         public string  Containername { get; private set; }
         public BeepConfigType ConfigureationType { get; private set; }
         public string BeepDirectory { get; private set; }
