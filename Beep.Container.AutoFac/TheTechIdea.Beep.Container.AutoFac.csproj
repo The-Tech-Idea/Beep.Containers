@@ -34,9 +34,6 @@
     <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.1" />
     <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="2.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Beep.Shared\TheTechIdea.Beep.Shared.csproj" />
-  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
   </Target>
