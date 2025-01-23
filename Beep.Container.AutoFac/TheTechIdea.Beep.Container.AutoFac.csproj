@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net8.0;net7.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>The Tech Idea</Authors>
+    <Company>The Tech Idea</Company>
+    <Copyright>2022</Copyright>
+    <PackageProjectUrl>https://github.com/The-Tech-Idea/</PackageProjectUrl>
+    <PackageIcon>SimpleODM.png</PackageIcon>
+    <RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
+    <Title>$(AssemblyName)</Title>
+    <PackageId>TheTechIdea.Beep.Container.AutoFac</PackageId>
+    <Description>Provides Classes using Beep DM Engine in Core Services using AutoFac</Description>
+    <RootNamespace>TheTechIdea.Beep.Container</RootNamespace>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\InstallationScripts\LogoGFx\128\SimpleODM.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.2.0" />
+    <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="2.0.2" />
+    <PackageReference Include="TheTechIdea.Beep.Container.Model" Version="1.0.0.40" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.10" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.36" />
+    <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.1" />
+    <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Beep.Shared\TheTechIdea.Beep.Shared.csproj" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
+  </Target>
+  <Target Name="CopyPackage" AfterTargets="Pack">
+    <Message Text="OutputPath: $(OutputPath)" Importance="high" />
+    <Message Text="Package File: $(OutputPath)$(PackageId).$(PackageVersion).nupkg" Importance="high" />
+
+    <Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\..\..\LocalNugetFiles" />
+  </Target>
+
+
+</Project>
