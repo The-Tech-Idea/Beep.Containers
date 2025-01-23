@@ -31,7 +31,9 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 services.AddSingleton<ICantainerManager>(cantainerManager);
             }
 
-            BeepService beepService = new BeepService(services, directorypath, containername, configType, AddasSingleton);            services.AddSingleton<IBeepService>(beepService);
+            BeepService beepService = new BeepService(services);
+            beepService.Configure(directorypath, containername, configType, AddasSingleton);
+            services.AddSingleton<IBeepService>(beepService);
             services.AddSingleton<IBeepService>(beepService);
             BeepContainer container = new BeepContainer(containername, beepService);
             services.AddSingleton<IBeepContainer>(container);

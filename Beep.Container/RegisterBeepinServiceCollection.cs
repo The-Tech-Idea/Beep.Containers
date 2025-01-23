@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TheTechIdea.Beep.Container.Services;
 using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Shared;
 using TheTechIdea.Beep.Utilities;
 
 
@@ -16,7 +17,8 @@ namespace TheTechIdea.Beep.Container
         public static IServiceCollection RegisterBeep(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = true)
         {
             Services = services;
-            beepService = new   BeepService(services,directorypath, containername, configType, AddasSingleton );
+            beepService = new   BeepService(services);
+            beepService.Configure(directorypath, containername, configType, AddasSingleton);
             Services.AddSingleton<IBeepService>(beepService);
             BeepDataPath= ContainerMisc.CreateMainFolder();
             CreateBeepMapping(beepService);

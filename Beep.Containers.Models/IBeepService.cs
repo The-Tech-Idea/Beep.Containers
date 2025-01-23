@@ -22,9 +22,9 @@ namespace TheTechIdea.Beep.Container.Services
         IDMLogger lg { get; set; }
         IAssemblyHandler LLoader { get; set; }
         void LoadConfigurations(string containername);
-        IServiceCollection Services { get; }
-        void LoadServicesScoped(IServiceCollection services);
-        void LoadServicesSingleton(IServiceCollection services);
+      //  IServiceCollection Services { get; }
+        void LoadServicesScoped();
+        void LoadServicesSingleton();
         IUtil util { get; set; }
         string  Containername { get; }
         BeepConfigType ConfigureationType { get; }

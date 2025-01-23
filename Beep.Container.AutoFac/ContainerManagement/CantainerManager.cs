@@ -8,6 +8,7 @@ using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.ConfigUtil;
 using TheTechIdea.Beep.Utilities;
+using Autofac;
 
 namespace TheTechIdea.Beep.Container.ContainerManagement
 {
@@ -15,10 +16,12 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
     {
         public CantainerManager()
         {
-
             
+
         }
-        private IServiceCollection services;
+        private IContainer services;
+        public ContainerBuilder Builder { get; } // Replaced IServiceCollection with Autofac's ContainerBuilder
+
         private bool disposedValue;
 
         public IBeepContainer CurrentContainer { get; set; }
@@ -33,9 +36,10 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public bool IsAppOn { get; set; } = false;
         public bool IsDevModeOn { get; set; } = false;
         public string filename { get; set; }="containers.json";
-        public CantainerManager(IServiceCollection pservices)
+        public CantainerManager(ContainerBuilder builder)
         {
-            services = pservices;
+            Builder = builder;
+         
             Containers = new List<IBeepContainer>();
             ErrorsandMesseges = new ErrorsInfo();
             CreateMainContainersfolder();
@@ -289,7 +293,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                     x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
                     try
                     {
-                        IBeepService beepservice = new BeepService(services);
+                        IBeepService beepservice = new BeepServiceAutoFac(Builder);
                         beepservice.Configure(pContainerFolderPath, pContainerName, BeepConfigType.Container);
                         x.BeepService = beepservice;
                         x.GuidID = Guid.NewGuid().ToString();
@@ -341,14 +345,14 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 
             
         }
-        public async Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName,  string pContainerFolderPath, string pSecretKey, string pTokenKey)
+        public async Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName, string pContainerFolderPath, string pSecretKey, string pTokenKey)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if Container already Exist
 
-                ErrorsandMesseges= await CreateContainer( ContainerGuidID, owner,  ownerEmail,  ownerID,  ownerGuid, pContainerName,  pContainerFolderPath);
+                ErrorsandMesseges= await CreateContainer( ContainerGuidID, owner,  ownerEmail,  ownerID,  ownerGuid, pContainerName, pContainerFolderPath);
                 if(ErrorsandMesseges.Flag==Errors.Ok)
                 {
                     IBeepContainer x = GetContainer(ContainerGuidID, owner, ownerEmail, ownerID, ownerGuid, pContainerName); 

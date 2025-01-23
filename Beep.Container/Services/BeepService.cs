@@ -11,6 +11,7 @@ using TheTechIdea.Beep.Editor;
 
 using TheTechIdea.Beep.Logger;
 using System.ComponentModel;
+using TheTechIdea.Beep.Shared;
 
 
 
@@ -18,7 +19,12 @@ namespace TheTechIdea.Beep.Container.Services
 {
     public class BeepService : IBeepService,IDisposable
     {
+        public BeepService(IServiceCollection services)
+        {
+            Services = services;
+           // Adding Required Configurations
 
+        }
         public BeepService()
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
@@ -26,16 +32,7 @@ namespace TheTechIdea.Beep.Container.Services
                 ConfigureForDesignTime();
             }
         }
-        public BeepService(IServiceCollection services, string directorypath,string containername, BeepConfigType configType, bool AddasSingleton = false)
-        {
-            Services = services;
-            Containername=containername;
-            ConfigureationType = configType;
-            BeepDirectory= directorypath;
-            Configure(directorypath, containername, configType,AddasSingleton);
-            // Adding Required Configurations
-         
-        }
+        
         bool isDev = false;
 
         #region "System Components"
@@ -94,11 +91,11 @@ namespace TheTechIdea.Beep.Container.Services
                 {
                     if (AddasSingleton == false)
                     {
-                        LoadServicesScoped(Services);
+                        LoadServicesScoped();
                     }
                     else
                     {
-                        LoadServicesSingleton(Services);
+                        LoadServicesSingleton();
                     }
                 }
 
@@ -128,24 +125,24 @@ namespace TheTechIdea.Beep.Container.Services
             //    isassembliesloaded = true;
             //}
         }
-        public void LoadServicesScoped(IServiceCollection services)
+        public void LoadServicesScoped()
         {
-            services.AddKeyedScoped<IDMLogger, DMLogger>("Logger");
-            services.AddKeyedScoped<IConfigEditor, ConfigEditor>("ConfigEditor");
-            services.AddKeyedScoped<IDMEEditor, DMEEditor>("Editor");
-            services.AddKeyedScoped<IUtil, Util>("Util");
-            services.AddKeyedScoped<IJsonLoader, JsonLoader>("JsonLoader");
-            services.AddKeyedScoped<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
+            Services.AddKeyedScoped<IDMLogger, DMLogger>("Logger");
+            Services.AddKeyedScoped<IConfigEditor, ConfigEditor>("ConfigEditor");
+            Services.AddKeyedScoped<IDMEEditor, DMEEditor>("Editor");
+            Services.AddKeyedScoped<IUtil, Util>("Util");
+            Services.AddKeyedScoped<IJsonLoader, JsonLoader>("JsonLoader");
+            Services.AddKeyedScoped<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
             
         }
-        public void LoadServicesSingleton(IServiceCollection services)
+        public void LoadServicesSingleton()
         {
-            services.AddSingleton<IDMLogger>(lg);
-            services.AddSingleton<IConfigEditor>(Config_editor);
-            services.AddSingleton<IDMEEditor>(DMEEditor);
-            services.AddSingleton<IUtil>(util);
-            services.AddSingleton<IJsonLoader>(jsonLoader);
-            services.AddSingleton<IAssemblyHandler>(LLoader);
+            Services.AddSingleton<IDMLogger>(lg);
+            Services.AddSingleton<IConfigEditor>(Config_editor);
+            Services.AddSingleton<IDMEEditor>(DMEEditor);
+            Services.AddSingleton<IUtil>(util);
+            Services.AddSingleton<IJsonLoader>(jsonLoader);
+            Services.AddSingleton<IAssemblyHandler>(LLoader);
         }
         public void LoadConfigurations(string containername)
         {

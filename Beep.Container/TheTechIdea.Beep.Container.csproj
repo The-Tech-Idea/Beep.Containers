@@ -12,7 +12,7 @@
 		<PackageIcon>SimpleODM.png</PackageIcon>
 		<RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.0.77</Version>
+		<Version>1.0.0.80</Version>
 		<Title>$(AssemblyName)</Title>
 		<Description>Provides Classes using Beep DM Engine in Core Services</Description>
 
@@ -34,6 +34,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="2.0.2" />
+    <PackageReference Include="TheTechIdea.Beep.Container.Model" Version="1.0.0.42" />
     <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.10" />
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.36" />
     <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.1" />
@@ -42,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Beep.Containers.Models\TheTechIdea.Beep.Container.Model.csproj" />
+    <ProjectReference Include="..\..\Beep.Shared\Beep.Shared\TheTechIdea.Beep.Shared.csproj" />
   </ItemGroup>
 
 </Project>
