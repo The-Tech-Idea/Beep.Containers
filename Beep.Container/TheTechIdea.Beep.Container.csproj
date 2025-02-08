@@ -12,7 +12,7 @@
 		<PackageIcon>SimpleODM.png</PackageIcon>
 		<RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.0.80</Version>
+		<Version>1.0.0.81</Version>
 		<Title>$(AssemblyName)</Title>
 		<Description>Provides Classes using Beep DM Engine in Core Services</Description>
 
@@ -39,11 +39,11 @@
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.36" />
     <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.1" />
     <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="2.0.1" />
-    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.129" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Beep.Shared\Beep.Shared\TheTechIdea.Beep.Shared.csproj" />
+    <ProjectReference Include="..\..\Beep.Winform\TheTechIdea.Beep.Vis.Modules2.0\TheTechIdea.Beep.Vis.Modules.csproj" />
   </ItemGroup>
 
 </Project>
