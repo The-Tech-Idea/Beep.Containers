@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Beep.Shared\Beep.Shared\TheTechIdea.Beep.Shared.csproj" />
+    <ProjectReference Include="..\Beep.Container\TheTechIdea.Beep.Container.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
