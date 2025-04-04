@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		  <TargetFrameworks>net8.0</TargetFrameworks>
+		  <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>12.0</LangVersion>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -12,7 +12,7 @@
 		<PackageIcon>SimpleODM.png</PackageIcon>
 		<RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.0.42</Version>
+		<Version>1.0.0.43</Version>
 		<Description>Provides Classes using Beep DM Engine in ASP .Core Services Modules</Description>
 		<Title>$(AssemblyName)</Title>
 
@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.39" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.40" />
   </ItemGroup>
 
   <ItemGroup>
