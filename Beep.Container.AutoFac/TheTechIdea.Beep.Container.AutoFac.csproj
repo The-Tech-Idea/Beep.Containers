@@ -3,7 +3,7 @@
   <PropertyGroup>
       <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>12.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>The Tech Idea</Authors>
     <Company>The Tech Idea</Company>
@@ -12,7 +12,7 @@
     <PackageIcon>SimpleODM.png</PackageIcon>
     <RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Title>$(AssemblyName)</Title>
     <PackageId>TheTechIdea.Beep.Container.AutoFac</PackageId>
     <Description>Provides Classes using Beep DM Engine in Core Services using AutoFac</Description>
@@ -28,11 +28,12 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="8.2.0" />
     <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="2.0.4" />
-    <PackageReference Include="TheTechIdea.Beep.Container.Model" Version="1.0.0.43" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.15" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.40" />
+    <PackageReference Include="TheTechIdea.Beep.Container.Model" Version="1.0.0.44" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.16" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.42" />
     <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.2" />
     <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="2.0.2" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.136" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Beep.Shared\Beep.Shared\TheTechIdea.Beep.Shared.csproj" />
