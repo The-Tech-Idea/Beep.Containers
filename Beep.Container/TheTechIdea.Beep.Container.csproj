@@ -39,7 +39,7 @@
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.42" />
     <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.2" />
     <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="2.0.2" />
-    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.136" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.139" />
   </ItemGroup>
 
 </Project>
