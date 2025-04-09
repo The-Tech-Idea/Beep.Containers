@@ -31,8 +31,8 @@
 	</Target>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.3" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.42" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.45" />
     <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.139" />
   </ItemGroup>
 	
