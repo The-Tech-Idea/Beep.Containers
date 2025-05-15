@@ -11,7 +11,7 @@ using TheTechIdea.Beep.Editor;
 
 using TheTechIdea.Beep.Logger;
 using System.ComponentModel;
-
+using TheTechIdea.Beep.Container.
 
 
 
@@ -19,14 +19,27 @@ namespace TheTechIdea.Beep.Container.Services
 {
     public class BeepService : IBeepService,IDisposable
     {
+
+        // Add these fields for thread-safe initialization
+        private readonly object _configLock = new object();
+        private readonly object _assembliesLock = new object();
+
         public BeepService(IServiceCollection services)
         {
             Services = services;
-           // Adding Required Configurations
+            // Adding Required Configurations
+            // Initialize fields to prevent null reference exceptions
+            Environments = new Dictionary<EnvironmentType, IBeepEnvironment>();
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
 
         }
         public BeepService()
         {
+            // Initialize fields to prevent null reference exceptions
+            Environments = new Dictionary<EnvironmentType, IBeepEnvironment>();
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 ConfigureForDesignTime();
@@ -67,63 +80,79 @@ namespace TheTechIdea.Beep.Container.Services
                 Console.WriteLine($"Design-time configuration failed: {ex.Message}");
             }
         }
-        public void Configure(string directorypath , string containername, BeepConfigType configType, bool AddasSingleton = false) //ContainerBuilder builder
+        public void Configure(string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = false)
         {
-            Containername = containername;
-            ConfigureationType = configType;
-            BeepDirectory = directorypath;
-            Erinfo = new ErrorsInfo();
-            lg = new DMLogger();
-            jsonLoader = new JsonLoader();
-            string root = "";
-            if(string.IsNullOrEmpty(directorypath) )
-            {
-                directorypath = AppContext.BaseDirectory;
-            }
-            root = Path.Combine(directorypath, "Beep");
-            Config_editor = new ConfigEditor(lg, Erinfo, jsonLoader, root, containername, configType);
-            util = new Util(lg, Erinfo, Config_editor);
-            LLoader = new AssemblyHandler(Config_editor, Erinfo, lg, util);
-            DMEEditor = new DMEEditor(lg, util, Erinfo, Config_editor, LLoader);
             try
             {
-                if (Services != null)
+                // Store configuration parameters
+                Containername = containername ?? throw new ArgumentNullException(nameof(containername));
+                ConfigureationType = configType;
+
+                // Use ContainerMisc for base path if directorypath is null
+                if (string.IsNullOrEmpty(directorypath))
                 {
-                    if (AddasSingleton == false)
-                    {
-                        LoadServicesScoped();
-                    }
-                    else
-                    {
-                        LoadServicesSingleton();
-                    }
+                    BeepDirectory = ContainerMisc.CreateMainFolder();
+                }
+                else
+                {
+                    BeepDirectory = directorypath;
                 }
 
-                // Create Default Parameter object
+                // Initialize core components
+                Erinfo = new ErrorsInfo();
+                lg = new DMLogger();
+                jsonLoader = new JsonLoader();
+
+                // Determine root path
+                string root = Path.Combine(BeepDirectory, "Beep");
+
+                // Create core services
+                Config_editor = new ConfigEditor(lg, Erinfo, jsonLoader, root, containername, configType);
+                util = new Util(lg, Erinfo, Config_editor);
+                LLoader = new AssemblyHandler(Config_editor, Erinfo, lg, util);
+                DMEEditor = new DMEEditor(lg, util, Erinfo, Config_editor, LLoader);
+
+                // Register services if collection provided
+                if (Services != null)
+                {
+                    if (AddasSingleton)
+                        LoadServicesSingleton();
+                    else
+                        LoadServicesScoped();
+                }
+
+                // Initialize arguments
                 DMEEditor.Passedarguments = new PassedArgs();
                 DMEEditor.Passedarguments.Objects = new List<ObjectItem>();
-                
+
                 DMEEditor.ErrorObject.Flag = Errors.Ok;
+
+                // Load configurations if not already loaded
+                if (!isconfigloaded)
+                {
+                    LoadConfigurations(containername);
+                }
             }
             catch (Exception ex)
             {
-                DMEEditor.Passedarguments = new PassedArgs();
-                DMEEditor.Passedarguments.Objects = new List<ObjectItem>();
+                // Create minimal valid state even on error
+          
+
+                // Ensure arguments exist
+                DMEEditor.Passedarguments = new PassedArgs
+                {
+                    Objects = new List<ObjectItem>()
+                };
+
+                // Set error information
                 DMEEditor.ErrorObject.Ex = ex;
                 DMEEditor.ErrorObject.Message = ex.Message;
                 DMEEditor.ErrorObject.Flag = Errors.Failed;
-                Console.WriteLine(ex.Message);
+
+                // Log the error
+                lg?.WriteLog($"BeepService configuration failed: {ex.Message}");
+                Console.WriteLine($"BeepService configuration failed: {ex.Message}");
             }
-            if(isconfigloaded==false)
-            {
-                LoadConfigurations(containername);
-                isconfigloaded = true;
-            }
-            //if(isassembliesloaded==false)
-            //{
-            //    LoadAssemblies();
-            //    isassembliesloaded = true;
-            //}
         }
         public void LoadServicesScoped()
         {
@@ -146,16 +175,19 @@ namespace TheTechIdea.Beep.Container.Services
         }
         public void LoadConfigurations(string containername)
         {
-            if (isconfigloaded)
+            lock (_configLock)
             {
-                return;
+                if (isconfigloaded)
+                    return;
+
+                ContainerMisc.AddAllConnectionConfigurations(this);
+                ContainerMisc.AddAllDataSourceMappings(this);
+                ContainerMisc.AddAllDataSourceQueryConfigurations(this);
+                ContainerMisc.CreateMainFolder();
+                ContainerMisc.CreateContainerfolder(containername);
+
+                isconfigloaded = true;
             }
-            isconfigloaded = true;
-            ContainerMisc.AddAllConnectionConfigurations(this);
-            ContainerMisc.AddAllDataSourceMappings(this);
-            ContainerMisc.AddAllDataSourceQueryConfigurations(this);
-            ContainerMisc.CreateMainFolder();
-            ContainerMisc.CreateContainerfolder(containername);
         }
         public async Task LoadAssembliesAsync(Progress<PassedArgs> progress)
         {
@@ -174,17 +206,25 @@ namespace TheTechIdea.Beep.Container.Services
             LLoader.LoadAllAssembly(progress, token);
             Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
         }
+
         public void LoadAssemblies()
         {
-            if (isassembliesloaded)
+            lock (_assembliesLock)
             {
-                return;
+                if (isassembliesloaded)
+                    return;
+
+                Progress<PassedArgs> progress = new Progress<PassedArgs>();
+                tokenSource = tokenSource ?? new CancellationTokenSource();
+                token = tokenSource.Token;
+
+                LLoader.LoadAllAssembly(progress, token);
+
+                if (Config_editor != null && LLoader?.Assemblies != null)
+                    Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
+
+                isassembliesloaded = true;
             }
-            Progress<PassedArgs> progress=new Progress<PassedArgs>()
-            {
-            };
-            LLoader.LoadAllAssembly(progress, token);
-            Config_editor.LoadedAssemblies = LLoader.Assemblies.Select(c => c.DllLib).ToList();
         }
         public Dictionary<EnvironmentType, IBeepEnvironment> Environments { get; set; }
         public void LoadEnvironments()

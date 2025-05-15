@@ -1,7 +1,7 @@
 ﻿
 using TheTechIdea.Beep.Editor;
 
-namespace TheTechIdea.Beep.Container.Models
+namespace TheTechIdea.Beep.Container.Model
 {
     public class Product :Entity, IProduct
     {

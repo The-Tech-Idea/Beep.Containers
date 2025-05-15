@@ -4,7 +4,7 @@ using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.ConfigUtil;
 
-namespace TheTechIdea.Beep.Container.ContainerManagement
+namespace TheTechIdea.Beep.Container.Model
 {
     public interface ICantainerManager
     {
