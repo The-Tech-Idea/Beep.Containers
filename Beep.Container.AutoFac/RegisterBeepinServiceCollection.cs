@@ -1,7 +1,8 @@
 ﻿using Autofac;
 using TheTechIdea.Beep.Container.Services;
+using TheTechIdea.Beep.Container.Shared;
 using TheTechIdea.Beep.Editor;
-using TheTechIdea.Beep.Shared;
+
 using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container

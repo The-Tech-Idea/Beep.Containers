@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TheTechIdea.Beep.Container.Services;
+using TheTechIdea.Beep.Container.Shared;
 using TheTechIdea.Beep.Editor;
 
 using TheTechIdea.Beep.Utilities;
