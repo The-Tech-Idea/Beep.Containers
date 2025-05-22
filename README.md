@@ -1,15 +1,53 @@
-# Beep Containers
+# Beep.Containers
 
-Beep Containers is a library within the [BeepDM Framework](https://github.com/The-Tech-Idea/BeepDM), developed by [The-Tech-Idea](https://github.com/The-Tech-Idea). It provides dependency injection (DI) and container management capabilities using Microsoft.Extensions.DependencyInjection, enabling service registration and feature loading for BeepDM applications.
+Beep.Containers is a modular extension library for the [BeepDM Framework](https://github.com/The-Tech-Idea/BeepDM), built by [The-Tech-Idea](https://github.com/The-Tech-Idea). It offers flexible dependency injection, robust container management, feature/plugin loading, and integrated file system and configuration support for BeepDM-powered .NET applications.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Integration with BeepDM](#integration-with-beepdm)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [BeepService](#beepservice-in-depth)
+- [ContainerMisc](#containermisc-in-depth)
+- [Advanced Topics](#advanced-topics)
+- [Related Projects](#related-projects)
+- [License](#license)
+
+---
+
+## Overview
+
+Beep.Containers provides a foundation for building modular, containerized, and feature-rich data management platforms on top of BeepDM. It standardizes DI registration, enables dynamic feature loading, automates environment setup, and simplifies multi-container orchestration.
+
+---
+
+## Integration with BeepDM
+
+**Beep.Containers is based on [BeepDM](https://github.com/The-Tech-Idea/BeepDM).**  
+BeepDM is a core .NET library for orchestrating connections to multiple data sources, handling configuration, and offering extensible management of data-driven applications.  
+Beep.Containers extends this by offering advanced container management, feature/plugin discovery, and robust integration patterns for scalable, modular application design.
+
+---
 
 ## Features
-- **Service Registration**: Register `IBeepService` and `ICantainerManager` in an IServiceCollection.
-- **Container Management**: Manage a list of `IBeepContainer` instances with JSON persistence.
-- **Feature Loading**: Scan assemblies for `IBeepFeature` implementations.
-- **File System Integration**: Create container directories and extract ZIP files for setup.
-- **Configuration Support**: Configure Beep services with directory paths and container names.
+
+- **Service Registration**: Register `IBeepService` and `ICantainerManager` using either Microsoft.Extensions.DependencyInjection or Autofac.
+- **Container Management**: Manage lists of `IBeepContainer` instances with JSON-based persistence.
+- **Feature/Plugin Loading**: Scan assemblies for `IBeepFeature` implementations and dynamically load plugins at runtime.
+- **File System Integration**: Create main and container-specific directories, extract ZIPs, and manage environment files.
+- **Configuration Support**: Configure Beep services with directory paths, container names, and custom config types.
+- **Environment Management**: Save/load environment setups as JSON, supporting container isolation.
+- **Error Handling**: Consistent, structured error reporting and logging.
+- **Extensible**: Easily add new data sources, features, or management patterns.
+
+---
 
 ## Installation
+
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/The-Tech-Idea/Beep.Containers.git
@@ -18,176 +56,165 @@ Beep Containers is a library within the [BeepDM Framework](https://github.com/Th
    - Open the solution in Visual Studio 2019 or later.
    - Build the project to generate the DLL.
 
+---
+
 ## Usage
-- **Register Container Manager**:
-  ```csharp
-  var services = new ServiceCollection();
-  services.AddBeepContainerManager();
-  var provider = services.BuildServiceProvider();
-  var manager = provider.GetService<ICantainerManager>();
-  ```
-- **Add a Beep Container**:
-  ```csharp
-  services.AddBeepContainer(@"C:\BeepData", "MyContainer", BeepConfigType.Container);
-  var beepService = provider.GetService<IBeepService>();
-  ```
-- **Create a Container**:
-  ```csharp
-  await manager.CreateContainer("guid123", "user", "user@example.com", 1, "user-guid", "MyContainer");
-  ```
-- **Load Features**:
-  ```csharp
-  var loader = new FeatureLoader(assemblyHandler);
-  loader.Scan();
-  ```
 
-## IBeepService
-`IBeepService` is a core interface implemented by `BeepService`, serving as the backbone for configuring and managing BeepDM components within a containerized environment. It integrates with the DI container to provide access to essential services and handles configuration loading, making it a critical component for initializing BeepDM applications.
+### Service Registration
 
-### Key Capabilities
-- **Configuration**:
-  - Initializes BeepDM components with a directory path, container name, and configuration type (`BeepConfigType`).
-  - Example:
-    ```csharp
-    beepService.Configure(@"C:\BeepData", "MyContainer", BeepConfigType.Container, true);
-    ```
-- **Service Registration**:
-  - Registers BeepDM services (e.g., `IDMEEditor`, `IConfigEditor`, `IDMLogger`) as singletons or scoped instances.
-  - Supports both singleton and scoped lifetimes:
-    ```csharp
-    Services.AddSingleton<IDMEEditor>(DMEEditor); // Singleton
-    Services.AddScoped<IDMEEditor, DMEEditor>();  // Scoped
-    ```
-- **Configuration Loading**:
-  - Loads connection configurations, data source mappings, and query configurations via `ContainerMisc`:
-    ```csharp
-    ContainerMisc.AddAllConnectionConfigurations(beepService);
-    ContainerMisc.AddAllDataSourceMappings(beepService);
-    ContainerMisc.AddAllDataSourceQueryConfigurations(beepService);
-    ```
-- **Assembly Loading**:
-  - Loads assemblies synchronously or asynchronously with progress reporting:
-    ```csharp
-    beepService.LoadAssemblies(); // Synchronous
-    await beepService.LoadAssembliesAsync(new Progress<PassedArgs>(args => Console.WriteLine(args.ParameterString1))); // Asynchronous
-    ```
-- **Environment Management**:
-  - Loads and saves environment configurations from/to JSON files in an "Environments" subdirectory:
-    ```csharp
-    beepService.LoadEnvironments();
-    beepService.SaveEnvironments();
-    ```
-- **File System Setup**:
-  - Creates a main Beep folder (`%ProgramData%\TheTechIdea\Beep`) and container-specific subfolders:
-    ```csharp
-    ContainerMisc.CreateMainFolder(beepService);
-    ContainerMisc.CreateContainerfolder("MyContainer");
-    ```
-- **Component Access**:
-  - Provides properties for accessing BeepDM components:
-    - `IDMEEditor DMEEditor`: Editor instance.
-    - `IConfigEditor Config_editor`: Configuration manager.
-    - `IDMLogger lg`: Logger instance.
-    - `IAssemblyHandler LLoader`: Assembly loader.
-
-### Implementation Details
-- **Constructor**: Accepts an `IServiceCollection` for DI integration:
-  ```csharp
-  public BeepService(IServiceCollection services)
-  ```
-- **Design-Time Support**: Configures for design-time use in a designer context:
-  ```csharp
-  if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
-  {
-      ConfigureForDesignTime();
-  }
-  ```
-- **Disposal**: Implements `IDisposable` to clean up resources:
-  ```csharp
-  public void Dispose()
-  {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-  }
-  ```
-
-### Example Application Usage
-Below is an example from a WinForms application demonstrating `IBeepService` integration with both Microsoft.Extensions.DependencyInjection and Autofac:
-
-#### Using Microsoft.Extensions.DependencyInjection
+**Using Microsoft.Extensions.DependencyInjection:**
 ```csharp
-static void Main()
-{
-    ApplicationConfiguration.Initialize();
-    Application.EnableVisualStyles();
-    Application.SetCompatibleTextRenderingDefault(false);
-
-    HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-    BeepServicesRegister.RegisterServices(builder); // Registers IBeepService
-    using IHost host = builder.Build();
-    BeepServicesRegister.ConfigureServices(host);
-
-    var appManager = host.Services.GetService<IAppManager>();
-    appManager.ConfigureAppManager(config =>
-    {
-        config.Title = "Beep Data Management Platform";
-        config.Theme = EnumBeepThemes.CandyTheme;
-        config.IconUrl = "simpleinfoapps.ico";
-        config.LogoUrl = "simpleinfoapps.svg";
-        config.HomePageName = "Form1";
-    });
-
-    BeepAppServices.visManager = appManager;
-    BeepAppServices.beepService = host.Services.GetService<IBeepService>();
-    BeepAppServices.StartLoading(new string[] { "BeepEnterprize", "TheTechIdea", "Beep" });
-    BeepAppServices.RegisterRoutes();
-    BeepServicesRegister.ShowHome();
-    BeepServicesRegister.DisposeServices(host.Services);
-}
+var services = new ServiceCollection();
+services.AddBeepContainerManager();
+var provider = services.BuildServiceProvider();
+var beepService = provider.GetService<IBeepService>();
 ```
 
-#### Using Autofac
+**Using Autofac:**
 ```csharp
-static void StartAppUsingAutoFac()
-{
-    var builder = new ContainerBuilder();
-    BeepServicesRegisterAutFac.RegisterServices(builder); // Registers IBeepService
-    RegisterBeepWinformServices.RegisterControlManager(builder);
-    var container = builder.Build();
-
-    BeepServicesRegisterAutFac.ConfigureServices(container);
-    BeepAppServices.visManager = BeepServicesRegisterAutFac.AppManager;
-    BeepAppServices.beepService = BeepServicesRegisterAutFac.beepService;
-
-    BeepServicesRegisterAutFac.AppManager.Title = "Beep Data Management Platform";
-    BeepServicesRegisterAutFac.AppManager.Theme = EnumBeepThemes.DefaultTheme;
-    BeepServicesRegisterAutFac.AppManager.IconUrl = "simpleinfoapps.ico";
-    BeepServicesRegisterAutFac.AppManager.LogoUrl = "simpleinfoapps.svg";
-    BeepServicesRegisterAutFac.AppManager.HomePageName = "MainForm";
-
-    BeepAppServices.StartLoading(new string[] { "BeepEnterprize", "TheTechIdea", "Beep" });
-    BeepAppServices.RegisterRoutes();
-    BeepServicesRegisterAutFac.ShowHome();
-    BeepServicesRegisterAutFac.DisposeServices();
-}
+var builder = new ContainerBuilder();
+BeepServicesRegisterAutFac.RegisterServices(builder); // Registers IBeepService
+var container = builder.Build();
+var beepService = container.Resolve<IBeepService>();
 ```
 
-In both examples, `IBeepService` is resolved from the DI container and used to initialize the BeepDM environment, demonstrating its role as a foundational service.
+### Container Setup and Feature Loading
 
-## Project Structure
-Based on the provided files, the key components are:
+```csharp
+beepService.Configure(@"C:\BeepData", "MyContainer", BeepConfigType.Container, true);
+beepService.LoadAssemblies(); // Synchronous plugin/feature loading
+await beepService.LoadAssembliesAsync(new Progress<PassedArgs>(args => Console.WriteLine(args.ParameterString1))); // Async with progress
+beepService.LoadEnvironments();
+```
 
-### TheTechIdea.Beep.Container.ContainerManagement
-- **Key Files**:
-  - `RegisterContainerManagerServiceCollection.cs`: Registers `ICantainerManager` and `IBeepContainer`.
-  - `CantainerManager.cs`: Manages a list of containers with JSON persistence.
+### Environment and Container Management
 
-### TheTechIdea.Beep.Container.FeatureManagement
-- **Key Files**:
-  - `BeepFeature.cs`: Defines a feature with metadata.
-  - `FeatureLoader.cs`: Scans assemblies for `IBeepFeature` types.
+```csharp
+// Create required directories
+ContainerMisc.CreateMainFolder();
+ContainerMisc.CreateContainerfolder("MyContainer");
 
-### TheTechIdea.Beep.Container.Services
-- **Key Files**:
-  - `BeepService.cs`: Implements `IBeepService` for BeepDM component management.
-  - `ServiceHelper.cs`: Provides static
+// Load configurations into the service context
+ContainerMisc.AddAllConnectionConfigurations(beepService);
+ContainerMisc.AddAllDataSourceMappings(beepService);
+ContainerMisc.AddAllDataSourceQueryConfigurations(beepService);
+
+// Save or load your environment
+beepService.SaveEnvironments();
+beepService.LoadEnvironments();
+```
+
+---
+
+## BeepService In-Depth
+
+**BeepService** is the main orchestrator, managing BeepDM core objects and all containers’ lifecycles.
+
+### Responsibilities
+
+- **DI Integration:** Registers all core BeepDM services (`IDMEEditor`, `IConfigEditor`, `IDMLogger`, `IAssemblyHandler`, etc.) as singleton or scoped, both for Microsoft DI and Autofac.
+- **Configuration:** Initializes BeepDM with paths, names, and config types.
+- **Component Access:** Exposes all main BeepDM components for application-wide use.
+- **Feature/Plugin Management:** Dynamically loads assemblies and plugins at runtime.
+- **Environment Management:** Loads/saves environment definitions as JSON.
+- **Error Handling:** Structured error objects/logging and fallback state on failure.
+
+### Key Methods
+
+- `Configure(...)`: Sets up all components and registers services.
+- `LoadServicesSingleton()` / `LoadServicesScoped()`: Register core components for DI.
+- `LoadAssemblies()` / `LoadAssembliesAsync()`: Dynamic plugin/feature loading.
+- `LoadEnvironments()` / `SaveEnvironments()`: Environment persistence.
+- Error objects: `DMEEditor.ErrorObject`, `lg.WriteLog(...)`, etc.
+
+### Example
+
+```csharp
+beepService.Configure(@"C:\Data", "Finance", BeepConfigType.Container, true);
+beepService.LoadAssemblies();
+if (beepService.DMEEditor.ErrorObject.Flag == Errors.Failed)
+    Console.WriteLine("Initialization failed: " + beepService.DMEEditor.ErrorObject.Message);
+```
+
+---
+
+## ContainerMisc In-Depth
+
+**ContainerMisc** is a static utility class for all file system, mapping, and configuration tasks required by BeepService and containers.
+
+### Key Functions
+
+- `CreateMainFolder()`: Ensures main data directory exists, returns path.
+- `CreateContainerfolder(string name)`: Ensures per-container folder exists.
+- `AddAllConnectionConfigurations(IBeepService)`: Loads connection configs.
+- `AddAllDataSourceMappings(IBeepService)`: Loads datasource mappings.
+- `AddAllDataSourceQueryConfigurations(IBeepService)`: Loads query configs.
+
+### Example
+
+```csharp
+string mainPath = ContainerMisc.CreateMainFolder();
+string containerPath = ContainerMisc.CreateContainerfolder("Analysis");
+ContainerMisc.AddAllConnectionConfigurations(beepService);
+```
+
+---
+
+## Advanced Topics
+
+### Plugin (Assembly) Loading
+
+```csharp
+// Synchronous loading
+beepService.LoadAssemblies();
+
+// Asynchronous loading with progress reporting
+await beepService.LoadAssembliesAsync(new Progress<PassedArgs>(args => Console.WriteLine(args.ParameterString1)));
+
+// Direct, custom plugin load
+beepService.LLoader.LoadSingleAssembly("MyPlugin.dll");
+```
+
+### Error Handling
+
+```csharp
+try
+{
+    beepService.Configure(@"C:\InvalidPath", "BadContainer", BeepConfigType.Container);
+}
+catch (Exception ex)
+{
+    var error = beepService.DMEEditor.ErrorObject;
+    Console.WriteLine("Configuration error: " + error.Message);
+    if (error.Ex != null) Console.WriteLine(error.Ex.ToString());
+}
+
+if (beepService.DMEEditor.ErrorObject.Flag == Errors.Failed)
+{
+    // Handle error
+}
+beepService.lg.WriteLog("A custom log message");
+```
+
+### Integration with Other DI Frameworks
+
+- **Microsoft.Extensions.DependencyInjection:** See above (default).
+- **Autofac:** See above (advanced scenarios).
+- **Other frameworks:** Register BeepDM components (`IDMEEditor`, `IConfigEditor`, etc.) using your framework’s registration syntax.
+
+---
+
+## Related Projects
+
+- [BeepDM (Core Data Management Library)](https://github.com/The-Tech-Idea/BeepDM)
+- [Beep.Containers (this library)](https://github.com/The-Tech-Idea/Beep.Containers)
+
+---
+
+## License
+
+MIT
+
+---
+
+*For more information, see the [BeepDM documentation](https://github.com/The-Tech-Idea/BeepDM) and the source code in this repository.*
