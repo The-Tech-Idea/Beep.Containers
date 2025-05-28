@@ -7,7 +7,7 @@ using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container
 {
-    public static class RegisterBeepinAutofac
+    public static class RegisterBeep
     {
         private static ContainerBuilder _builder;
         private static IContainer _autofacContainer;
@@ -16,12 +16,12 @@ namespace TheTechIdea.Beep.Container
         private static string _beepDataPath;
         private static bool _mappingCreated = false;
 
-        public static ContainerBuilder RegisterBeep(this ContainerBuilder builder, string directorypath, string containername, BeepConfigType configType, bool addAsSingleton = true)
+        public static ContainerBuilder Register(this ContainerBuilder builder, string directorypath, string containername, BeepConfigType configType, bool addAsSingleton = true)
         {
             _builder = builder;
 
             // Create and configure BeepService
-            _beepService = new BeepServiceAutoFac(builder);
+            _beepService = new BeepService(builder);
             _beepService.Configure(directorypath, containername, configType, addAsSingleton);
 
             // Register BeepService with Autofac
@@ -36,22 +36,22 @@ namespace TheTechIdea.Beep.Container
 
             // Create the main folder and mappings
             _beepDataPath = ContainerMisc.CreateMainFolder();
-            CreateBeepMapping(builder);
+            CreateMapping(builder);
 
             return builder;
         }
 
-        public static ContainerBuilder RegisterScopedBeep(this ContainerBuilder builder)
+        public static ContainerBuilder RegisterScoped(this ContainerBuilder builder)
         {
             _builder = builder;
 
             // Register BeepService as a scoped service
-            builder.RegisterType<BeepServiceAutoFac>().As<IBeepService>().InstancePerLifetimeScope();
+            builder.RegisterType<BeepService>().As<IBeepService>().InstancePerLifetimeScope();
 
             return builder;
         }
 
-        public static ContainerBuilder CreateBeepMapping(this ContainerBuilder builder)
+        public static ContainerBuilder CreateMapping(this ContainerBuilder builder)
         {
             if (_beepService != null && !_mappingCreated)
             {

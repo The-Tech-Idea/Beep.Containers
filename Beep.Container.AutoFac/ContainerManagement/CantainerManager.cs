@@ -293,7 +293,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                     x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
                     try
                     {
-                        IBeepService beepservice = new BeepServiceAutoFac(Builder);
+                        IBeepService beepservice = new BeepService(Builder);
                         beepservice.Configure(pContainerFolderPath, pContainerName, BeepConfigType.Container);
                         x.BeepService = beepservice;
                         x.GuidID = Guid.NewGuid().ToString();

@@ -19,15 +19,15 @@ using TheTechIdea.Beep.Vis.Modules;
 
 namespace TheTechIdea.Beep.Container.Services
 {
-    public class BeepServiceAutoFac : IBeepService, IDisposable
+    public class BeepService : IBeepService, IDisposable
     {
-        public BeepServiceAutoFac(ContainerBuilder builder)
+        public BeepService(ContainerBuilder builder)
         {
             Builder = builder;
             // Adding Required Configurations
         }
 
-        public BeepServiceAutoFac()
+        public BeepService()
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {

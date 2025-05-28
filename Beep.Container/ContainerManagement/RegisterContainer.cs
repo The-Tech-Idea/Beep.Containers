@@ -8,13 +8,13 @@ using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container.ContainerManagement
 {
-    public static class RegisterContainerManagerServiceCollection
+    public static class RegisterContainer
     {
         private static ICantainerManager cantainerManager;
         private static IServiceCollection Services;
        
 
-        public static IServiceCollection AddBeepContainerManager(this IServiceCollection services)
+        public static IServiceCollection AddContainerManager(this IServiceCollection services)
         {
             Services = services;
             cantainerManager = new CantainerManager(services);
@@ -22,7 +22,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             services.AddScoped<IBeepContainer, BeepContainer>();
             return services;
         }
-        public static IServiceCollection AddBeepContainer(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = false)
+        public static IServiceCollection AddContainer(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = false)
         {
             Services = services;
             if (cantainerManager == null)
@@ -40,7 +40,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 
             return services;
         }
-        public static IServiceCollection AddBeepScopedContainerManager(this IServiceCollection services)
+        public static IServiceCollection AddScopedContainerManager(this IServiceCollection services)
         {
             Services = services;
             if (cantainerManager == null)

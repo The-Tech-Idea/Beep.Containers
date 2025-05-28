@@ -7,12 +7,12 @@ using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container.ContainerManagement
 {
-    public static class RegisterContainerManagerAutofac
+    public static class RegisterContainer
     {
         private static ICantainerManager _containerManager;
         private static ContainerBuilder _builder;
 
-        public static ContainerBuilder AddBeepContainerManager(this ContainerBuilder builder)
+        public static ContainerBuilder AddContainerManager(this ContainerBuilder builder)
         {
             _builder = builder;
             _containerManager = new CantainerManager();
@@ -21,7 +21,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             return builder;
         }
 
-        public static ContainerBuilder AddBeepContainer(this ContainerBuilder builder, string directorypath, string containername, BeepConfigType configType, bool addAsSingleton = false)
+        public static ContainerBuilder AddContainer(this ContainerBuilder builder, string directorypath, string containername, BeepConfigType configType, bool addAsSingleton = false)
         {
             _builder = builder;
             if (_containerManager == null)
@@ -31,7 +31,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
 
             // Register BeepService
-            var beepService = new BeepServiceAutoFac();
+            var beepService = new BeepService();
             beepService.Configure(directorypath, containername, configType, addAsSingleton);
             builder.RegisterInstance(beepService).As<IBeepService>().SingleInstance();
 
@@ -42,7 +42,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             return builder;
         }
 
-        public static ContainerBuilder AddBeepScopedContainerManager(this ContainerBuilder builder)
+        public static ContainerBuilder AddScopedContainerManager(this ContainerBuilder builder)
         {
             _builder = builder;
             if (_containerManager == null)
@@ -53,7 +53,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 
             // Register scoped services
             builder.RegisterType<BeepContainer>().As<IBeepContainer>().InstancePerLifetimeScope();
-            builder.RegisterType<BeepServiceAutoFac>().As<IBeepService>().InstancePerLifetimeScope();
+            builder.RegisterType<BeepService>().As<IBeepService>().InstancePerLifetimeScope();
 
             return builder;
         }

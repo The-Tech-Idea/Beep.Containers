@@ -8,30 +8,30 @@ using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container
 {
-    public static class RegisterBeepinServiceCollection
+    public static class RegisterBeep
     {
         public static IServiceCollection Services { get; private set; }
 
         private static IBeepService beepService;
         private static string BeepDataPath;
         private static bool mappingcreated = false;
-        public static IServiceCollection RegisterBeep(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = true)
+        public static IServiceCollection Register(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = true)
         {
             Services = services;
             beepService = new   BeepService(services);
             beepService.Configure(directorypath, containername, configType, AddasSingleton);
             Services.AddSingleton<IBeepService>(beepService);
             BeepDataPath= ContainerMisc.CreateMainFolder();
-            CreateBeepMapping(beepService);
+            CreateMapping(beepService);
             return Services;
         }
-        public static IServiceCollection RegisterScopedBeep(this IServiceCollection services)
+        public static IServiceCollection RegisterScoped(this IServiceCollection services)
         {
             Services = services;
             Services.AddScoped<IBeepService>();
             return Services;
         }
-        public static IServiceCollection CreateBeepMapping(this IBeepService beepService)
+        public static IServiceCollection CreateMapping(this IBeepService beepService)
         {
             if(beepService!=null && !mappingcreated) {
                 mappingcreated= true;
