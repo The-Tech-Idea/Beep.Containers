@@ -12,7 +12,7 @@
     <PackageIcon>SimpleODM.png</PackageIcon>
     <RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Title>$(AssemblyName)</Title>
     <PackageId>TheTechIdea.Beep.Container.AutoFac</PackageId>
     <Description>Provides Classes using Beep DM Engine in Core Services using AutoFac</Description>
