@@ -86,7 +86,7 @@ namespace TheTechIdea.Beep.Container.Services
             try
             {
                 // Store configuration parameters
-                Containername = containername ?? throw new ArgumentNullException(nameof(containername));
+                Containername = containername ??"Beep";
                 ConfigureationType = configType;
 
                 // Use ContainerMisc for base path if directorypath is null
@@ -139,17 +139,7 @@ namespace TheTechIdea.Beep.Container.Services
                 // Create minimal valid state even on error
           
 
-                // Ensure arguments exist
-                DMEEditor.Passedarguments = new PassedArgs
-                {
-                    Objects = new List<ObjectItem>()
-                };
-
-                // Set error information
-                DMEEditor.ErrorObject.Ex = ex;
-                DMEEditor.ErrorObject.Message = ex.Message;
-                DMEEditor.ErrorObject.Flag = Errors.Failed;
-
+          
                 // Log the error
                 lg?.WriteLog($"BeepService configuration failed: {ex.Message}");
                 Console.WriteLine($"BeepService configuration failed: {ex.Message}");
