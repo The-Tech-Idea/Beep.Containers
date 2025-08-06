@@ -15,7 +15,7 @@ namespace TheTechIdea.Beep.Container
         private static IBeepService beepService;
         private static string BeepDataPath;
         private static bool mappingcreated = false;
-        public static IServiceCollection Register(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = true)
+        public static IBeepService Register(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = true)
         {
             Services = services;
             beepService = new   BeepService(services);
@@ -23,7 +23,7 @@ namespace TheTechIdea.Beep.Container
             Services.AddSingleton<IBeepService>(beepService);
             BeepDataPath= ContainerMisc.CreateMainFolder();
             CreateMapping(beepService);
-            return Services;
+            return beepService;
         }
         public static IServiceCollection RegisterScoped(this IServiceCollection services)
         {

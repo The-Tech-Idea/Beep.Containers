@@ -22,7 +22,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             services.AddScoped<IBeepContainer, BeepContainer>();
             return services;
         }
-        public static IServiceCollection AddContainer(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = false)
+        public static ICantainerManager AddContainer(this IServiceCollection services, string directorypath, string containername, BeepConfigType configType, bool AddasSingleton = false)
         {
             Services = services;
             if (cantainerManager == null)
@@ -38,9 +38,9 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             BeepContainer container = new BeepContainer(containername, beepService);
             services.AddSingleton<IBeepContainer>(container);
 
-            return services;
+            return cantainerManager;
         }
-        public static IServiceCollection AddScopedContainerManager(this IServiceCollection services)
+        public static ICantainerManager AddScopedContainerManager(this IServiceCollection services)
         {
             Services = services;
             if (cantainerManager == null)
@@ -50,7 +50,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             }
             services.AddScoped<IBeepContainer,BeepContainer>();
             services.AddScoped<IBeepService,BeepService>();
-            return services;
+            return cantainerManager;
         }
 
     }
