@@ -11,9 +11,9 @@ using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container.ContainerManagement
 {
-    public  class CantainerManager : ICantainerManager,IDisposable
+    public  class ContainerManager : ICantainerManager,IDisposable
     {
-        public CantainerManager()
+        public ContainerManager()
         {
 
             
@@ -33,7 +33,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public bool IsAppOn { get; set; } = false;
         public bool IsDevModeOn { get; set; } = false;
         public string filename { get; set; }="containers.json";
-        public CantainerManager(IServiceCollection pservices)
+        public ContainerManager(IServiceCollection pservices)
         {
             services = pservices;
             Containers = new List<IBeepContainer>();
