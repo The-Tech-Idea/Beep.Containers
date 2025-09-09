@@ -25,8 +25,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="TheTechIdea.Beep.Container.Model" Version="1.0.0.48" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.39" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.81" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.40" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.82" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
