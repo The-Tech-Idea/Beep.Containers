@@ -13,6 +13,8 @@ using TheTechIdea.Beep.Logger;
 using System.ComponentModel;
 using TheTechIdea.Beep.Container.Shared;
 using TheTechIdea.Beep.Utils;
+using TheTechIdea.Beep.Helpers.UniversalDataSourceHelpers;
+using TheTechIdea.Beep.Helpers.UniversalDataSourceHelpers.Conversion;
 
 
 
@@ -154,7 +156,14 @@ namespace TheTechIdea.Beep.Container.Services
             Services.AddKeyedScoped<IUtil, Util>("Util");
             Services.AddKeyedScoped<IJsonLoader, JsonLoader>("JsonLoader");
             Services.AddKeyedScoped<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
-            
+
+            // Phase 2: Register Universal DataSource Helpers as scoped
+            Services.AddScoped<IPocoToEntityConverter>(sp => new PocoConverterService(lg));
+            Services.AddScoped<DataSourceCapabilityMatrix>();
+            Services.AddScoped<IDataSourceHelper, MongoDBHelper>();
+            Services.AddScoped<IDataSourceHelper, RedisHelper>();
+            Services.AddScoped<IDataSourceHelper, CassandraHelper>();
+            Services.AddScoped<IDataSourceHelper, RestApiHelper>();
         }
         public void LoadServicesSingleton()
         {
@@ -164,6 +173,14 @@ namespace TheTechIdea.Beep.Container.Services
             Services.AddSingleton<IUtil>(util);
             Services.AddSingleton<IJsonLoader>(jsonLoader);
             Services.AddSingleton<IAssemblyHandler>(LLoader);
+
+            // Phase 2: Register Universal DataSource Helpers
+            Services.AddSingleton<IPocoToEntityConverter>(sp => new PocoConverterService(lg));
+            Services.AddSingleton<DataSourceCapabilityMatrix>();
+            Services.AddSingleton<IDataSourceHelper, MongoDBHelper>();
+            Services.AddSingleton<IDataSourceHelper, RedisHelper>();
+            Services.AddSingleton<IDataSourceHelper, CassandraHelper>();
+            Services.AddSingleton<IDataSourceHelper, RestApiHelper>();
         }
         public void LoadConfigurations(string containername)
         {
