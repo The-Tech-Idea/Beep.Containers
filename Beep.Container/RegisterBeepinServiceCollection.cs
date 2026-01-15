@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.Container.Services;
-using TheTechIdea.Beep.Container.Shared;
-using TheTechIdea.Beep.Container.Model;
+
 using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Services;
 using TheTechIdea.Beep.Utilities;
 
 namespace TheTechIdea.Beep.Container
@@ -145,9 +145,9 @@ namespace TheTechIdea.Beep.Container
 
                 try
                 {
-                    ContainerMisc.AddAllConnectionConfigurations(beepService);
-                    ContainerMisc.AddAllDataSourceMappings(beepService);
-                    ContainerMisc.AddAllDataSourceQueryConfigurations(beepService);
+                    EnvironmentService.AddAllConnectionConfigurations(beepService.DMEEditor);
+                    EnvironmentService.AddAllDataSourceMappings(beepService.DMEEditor);
+                    EnvironmentService.AddAllDataSourceQueryConfigurations(beepService.DMEEditor);
                     
                     _isMappingCreated = true;
                 }
@@ -182,8 +182,8 @@ namespace TheTechIdea.Beep.Container
                     Messege = "Creating connection configurations...",
                     EventType = "Progress"
                 });
-                
-                ContainerMisc.AddAllConnectionConfigurations(beepService);
+
+                EnvironmentService.AddAllConnectionConfigurations(beepService.DMEEditor);
                 
                 cancellationToken.ThrowIfCancellationRequested();
                 
@@ -191,8 +191,8 @@ namespace TheTechIdea.Beep.Container
                     Messege = "Creating data source mappings...",
                     EventType = "Progress"
                 });
-                
-                ContainerMisc.AddAllDataSourceMappings(beepService);
+
+                EnvironmentService.AddAllDataSourceMappings(beepService.DMEEditor);
                 
                 cancellationToken.ThrowIfCancellationRequested();
                 
@@ -200,8 +200,8 @@ namespace TheTechIdea.Beep.Container
                     Messege = "Creating query configurations...",
                     EventType = "Progress"
                 });
-                
-                ContainerMisc.AddAllDataSourceQueryConfigurations(beepService);
+
+                EnvironmentService.AddAllDataSourceQueryConfigurations(beepService.DMEEditor);
                 
                 progress?.Report(new PassedArgs { 
                     Messege = "Mapping creation completed successfully.",
@@ -228,7 +228,7 @@ namespace TheTechIdea.Beep.Container
         {
             if (string.IsNullOrEmpty(_beepDataPath))
             {
-                _beepDataPath = ContainerMisc.CreateMainFolder();
+                _beepDataPath = EnvironmentService.CreateMainFolder();
             }
             return _beepDataPath;
         }
@@ -341,7 +341,7 @@ namespace TheTechIdea.Beep.Container
                     RegisterServiceWithLifetime(services, _cachedBeepService, options.ServiceLifetime);
 
                     // Initialize folder structure
-                    _beepDataPath = ContainerMisc.CreateMainFolder();
+                    _beepDataPath = EnvironmentService.CreateMainFolder();
 
                     // Create mappings if enabled
                     if (options.EnableAutoMapping)

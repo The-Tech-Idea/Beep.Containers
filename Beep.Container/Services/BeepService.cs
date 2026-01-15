@@ -1,9 +1,7 @@
-﻿using TheTechIdea.Beep.Vis.Modules;
+﻿
 using Microsoft.Extensions.DependencyInjection;
 using System.Data;
 using TheTechIdea.Beep.ConfigUtil;
-using TheTechIdea.Beep.Container.Model;
-
 using TheTechIdea.Beep.Tools;
 using TheTechIdea.Beep.Utilities;
 using TheTechIdea.Beep.Addin;
@@ -11,10 +9,11 @@ using TheTechIdea.Beep.Editor;
 
 using TheTechIdea.Beep.Logger;
 using System.ComponentModel;
-using TheTechIdea.Beep.Container.Shared;
+
 using TheTechIdea.Beep.Utils;
-using TheTechIdea.Beep.Helpers.UniversalDataSourceHelpers;
-using TheTechIdea.Beep.Helpers.UniversalDataSourceHelpers.Conversion;
+
+using TheTechIdea.Beep.Services;
+
 
 
 
@@ -61,7 +60,7 @@ namespace TheTechIdea.Beep.Container.Services
         public IJsonLoader jsonLoader { get; set; }
         public IAssemblyHandler LLoader { get; set; }
         public IServiceCollection Services { get; }
-        public IAppManager vis { get; set; }
+        //public IAppManager vis { get; set; }
         public string  Containername { get; private set; }
         public BeepConfigType ConfigureationType { get; private set; }
         public string BeepDirectory { get; private set; }
@@ -92,10 +91,10 @@ namespace TheTechIdea.Beep.Container.Services
                 Containername = containername ??"Beep";
                 ConfigureationType = configType;
 
-                // Use ContainerMisc for base path if directorypath is null
+                // Use EnvironmentService for base path if directorypath is null
                 if (string.IsNullOrEmpty(directorypath))
                 {
-                    BeepDirectory = ContainerMisc.CreateMainFolder();
+                    BeepDirectory = EnvironmentService.CreateMainFolder();
                 }
                 else
                 {
@@ -157,13 +156,6 @@ namespace TheTechIdea.Beep.Container.Services
             Services.AddKeyedScoped<IJsonLoader, JsonLoader>("JsonLoader");
             Services.AddKeyedScoped<IAssemblyHandler, AssemblyHandler>("AssemblyHandler");
 
-            // Phase 2: Register Universal DataSource Helpers as scoped
-            Services.AddScoped<IPocoToEntityConverter>(sp => new PocoConverterService(lg));
-            Services.AddScoped<DataSourceCapabilityMatrix>();
-            Services.AddScoped<IDataSourceHelper, MongoDBHelper>();
-            Services.AddScoped<IDataSourceHelper, RedisHelper>();
-            Services.AddScoped<IDataSourceHelper, CassandraHelper>();
-            Services.AddScoped<IDataSourceHelper, RestApiHelper>();
         }
         public void LoadServicesSingleton()
         {
@@ -174,13 +166,6 @@ namespace TheTechIdea.Beep.Container.Services
             Services.AddSingleton<IJsonLoader>(jsonLoader);
             Services.AddSingleton<IAssemblyHandler>(LLoader);
 
-            // Phase 2: Register Universal DataSource Helpers
-            Services.AddSingleton<IPocoToEntityConverter>(sp => new PocoConverterService(lg));
-            Services.AddSingleton<DataSourceCapabilityMatrix>();
-            Services.AddSingleton<IDataSourceHelper, MongoDBHelper>();
-            Services.AddSingleton<IDataSourceHelper, RedisHelper>();
-            Services.AddSingleton<IDataSourceHelper, CassandraHelper>();
-            Services.AddSingleton<IDataSourceHelper, RestApiHelper>();
         }
         public void LoadConfigurations(string containername)
         {
@@ -189,11 +174,11 @@ namespace TheTechIdea.Beep.Container.Services
                 if (isconfigloaded)
                     return;
 
-                ContainerMisc.AddAllConnectionConfigurations(this);
-                ContainerMisc.AddAllDataSourceMappings(this);
-                ContainerMisc.AddAllDataSourceQueryConfigurations(this);
-                ContainerMisc.CreateMainFolder();
-                ContainerMisc.CreateContainerfolder(containername);
+                EnvironmentService.AddAllConnectionConfigurations(this.DMEEditor);
+                EnvironmentService.AddAllDataSourceMappings(this.DMEEditor);
+                EnvironmentService.AddAllDataSourceQueryConfigurations(this.DMEEditor);
+                EnvironmentService.CreateMainFolder();
+                EnvironmentService.CreateContainerfolder(containername);
 
                 isconfigloaded = true;
             }
@@ -239,9 +224,9 @@ namespace TheTechIdea.Beep.Container.Services
         public void LoadEnvironments()
         {
             // Load Environments from IBeepEnvironment in Environments
-            if(string.IsNullOrEmpty(ContainerMisc.ContainerDataPath))
+            if(string.IsNullOrEmpty(EnvironmentService.ContainerDataPath))
             {
-                ContainerMisc.CreateContainerfolder(Containername);
+                EnvironmentService.CreateContainerfolder(Containername);
             }
             
                 string envpath = Path.Combine(BeepDirectory, "Environments");
@@ -261,9 +246,9 @@ namespace TheTechIdea.Beep.Container.Services
         public void SaveEnvironments()
         {
             // Save Environments from IBeepEnvironment in Environments
-            if (string.IsNullOrEmpty(ContainerMisc.ContainerDataPath))
+            if (string.IsNullOrEmpty(EnvironmentService.ContainerDataPath))
             {
-                ContainerMisc.CreateContainerfolder(Containername);
+                EnvironmentService.CreateContainerfolder(Containername);
             }
             string envpath = Path.Combine(BeepDirectory, "Environments");
             if (Directory.Exists(envpath))
