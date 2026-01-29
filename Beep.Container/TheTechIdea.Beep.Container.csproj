@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
@@ -12,7 +12,7 @@
 		<PackageIcon>SimpleODM.png</PackageIcon>
 		<RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.0.94</Version>
+		<Version>1.0.1</Version>
 		<Title>$(AssemblyName)</Title>
 		<Description>Provides Classes using Beep DM Engine in Core Services</Description>
 
@@ -23,8 +23,17 @@
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
-	<ItemGroup>
+	<!-- Conditional package references for Microsoft.Extensions.Logging based on target framework -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.2" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.2" />
+	</ItemGroup>
+	<ItemGroup>
 	  <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="2.0.24" />
 	  <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.63" />
 	  <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.3" />
