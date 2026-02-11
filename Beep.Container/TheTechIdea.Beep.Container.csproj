@@ -25,7 +25,7 @@
 	</ItemGroup>
 	<!-- Conditional package references for Microsoft.Extensions.Logging based on target framework -->
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.3" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
@@ -35,7 +35,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="TheTechIdea.Beep.AssemblyLoader" Version="2.0.24" />
-	  <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.70" />
+	  <PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="2.0.71" />
 	  <PackageReference Include="TheTechIdea.Beep.DMLogger" Version="2.0.3" />
 	  <PackageReference Include="TheTechIdea.Beep.JsonLoader" Version="2.0.4" />
 	</ItemGroup>
