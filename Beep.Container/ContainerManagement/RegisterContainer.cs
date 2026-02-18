@@ -15,7 +15,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public static IServiceCollection AddContainerManager(this IServiceCollection services)
         {
             Services = services;
-            cantainerManager = new ContainerManager(services);
+            cantainerManager = new AppRepoManager(services);
             services.AddSingleton<ICantainerManager>(cantainerManager);
             services.AddScoped<IBeepContainer, BeepContainer>();
             return services;
@@ -25,7 +25,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             Services = services;
             if (cantainerManager == null)
             {
-                cantainerManager = new ContainerManager(services);
+                cantainerManager = new AppRepoManager(services);
                 services.AddSingleton<ICantainerManager>(cantainerManager);
             }
 
@@ -43,7 +43,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
             Services = services;
             if (cantainerManager == null)
             {
-                cantainerManager = new ContainerManager(services);
+                cantainerManager = new AppRepoManager(services);
                 services.AddSingleton<ICantainerManager>(cantainerManager);
             }
             services.AddScoped<IBeepContainer,BeepContainer>();

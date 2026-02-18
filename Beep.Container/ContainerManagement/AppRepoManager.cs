@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
 
-using TheTechIdea.Beep.Container.Services;
+using TheTechIdea.Beep.RepoApp.Services;
 
 using Newtonsoft.Json;
 using TheTechIdea.Beep.Addin;
@@ -10,12 +10,13 @@ using TheTechIdea.Beep.ConfigUtil;
 using TheTechIdea.Beep.Utilities;
 
 using TheTechIdea.Beep.Services;
+using TheTechIdea.Beep.Container.Services;
 
-namespace TheTechIdea.Beep.Container.ContainerManagement
+namespace TheTechIdea.Beep.RepoApp.RepoAppManagement
 {
-    public  class ContainerManager : ICantainerManager,IDisposable
+    public  class AppRepoManager : IRepoAppManager,IDisposable
     {
-        public ContainerManager()
+        public AppRepoManager()
         {
 
             
@@ -23,10 +24,10 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         private IServiceCollection services;
         private bool disposedValue;
 
-        public IBeepContainer CurrentContainer { get; set; }
-        public bool IsContainerActive { get; set; } = false;
-        public bool IsContainerLoaded { get; set; } = false;
-        public bool IsContainerCreated { get; set; } = false;
+        public IBeepRepoApp CurrentRepoApp { get; set; }
+        public bool IsRepoAppActive { get; set; } = false;
+        public bool IsRepoAppLoaded { get; set; } = false;
+        public bool IsRepoAppCreated { get; set; } = false;
 
         public bool IsLogOn { get; set; } = false;
         public bool IsDataModified { get; set; } = false;
@@ -35,22 +36,22 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
         public bool IsAppOn { get; set; } = false;
         public bool IsDevModeOn { get; set; } = false;
         public string filename { get; set; }="containers.json";
-        public ContainerManager(IServiceCollection pservices)
+        public AppRepoManager(IServiceCollection pservices)
         {
             services = pservices;
-            Containers = new List<IBeepContainer>();
+            RepoApps = new List<IBeepRepoApp>();
             ErrorsandMesseges = new ErrorsInfo();
-            CreateMainContainersfolder();
+            CreateMainRepoAppsfolder();
         }
 
-        private List<IBeepContainer> _containers;
-        public List<IBeepContainer> Containers
+        private List<IBeepRepoApp> _containers;
+        public List<IBeepRepoApp> RepoApps
         {
             get
             {
                 if (_containers == null)
                 {
-                    _containers = new List<IBeepContainer>();
+                    _containers = new List<IBeepRepoApp>();
                 }
                 return _containers;
             }
@@ -62,11 +63,11 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 
         public ErrorsInfo ErrorsandMesseges { get; set; } = new ErrorsInfo();
         string _containerFolderPath = string.Empty;
-        public string ContainerFolderPath 
+        public string RepoAppFolderPath 
         { get { 
                 if (string.IsNullOrEmpty(_containerFolderPath))
                 {
-                   CreateMainContainersfolder(); 
+                   CreateMainRepoAppsfolder(); 
                  } 
                  return _containerFolderPath;
               }
@@ -75,7 +76,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 _containerFolderPath = value;
               } 
         }
-        private  void CreateMainContainersfolder()
+        private  void CreateMainRepoAppsfolder()
         {
                 if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep")))
                 {
@@ -83,28 +84,28 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
 
                 }
                 string BeepDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TheTechIdea", "Beep");
-            if (!Directory.Exists(Path.Combine(BeepDataPath, "Containers")))
+            if (!Directory.Exists(Path.Combine(BeepDataPath, "RepoApps")))
             {
-                Directory.CreateDirectory(Path.Combine(BeepDataPath, "Containers"));
+                Directory.CreateDirectory(Path.Combine(BeepDataPath, "RepoApps"));
 
             }
-            _containerFolderPath = Path.Combine(BeepDataPath, "Containers");
-            filename= Path.Combine(BeepDataPath, "Containers", "containers.json");
+            _containerFolderPath = Path.Combine(BeepDataPath, "RepoApps");
+            filename= Path.Combine(BeepDataPath, "RepoApps", "containers.json");
         }
-        public  Task<ErrorsInfo> LoadContainers()
+        public  Task<ErrorsInfo> LoadRepoApps()
         {
             // load containers from file using system.text.json
-            // load using System.Text.Json json file into Containers = new List<IBeepContainer>();
+            // load using System.Text.Json json file into RepoApps = new List<IBeepRepoApp>();
             try
             {
                 if (File.Exists(filename))
                 {
                     String JSONtxt = File.ReadAllText(filename);
-                    Containers = JsonConvert.DeserializeObject<List<IBeepContainer>>(JSONtxt, GetSettings());
+                    RepoApps = JsonConvert.DeserializeObject<List<IBeepRepoApp>>(JSONtxt, GetSettings());
                 }
                 else
                 {
-                    Containers = new List<IBeepContainer>();
+                    RepoApps = new List<IBeepRepoApp>();
                 }
             }
             catch (Exception ex)
@@ -112,13 +113,13 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Load Containers ";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Load RepoApps ";
+                ErrorsandMesseges.Module = "RepoApp  Management";
             }
             
             return Task.FromResult(ErrorsandMesseges);
         }
-        public Task<ErrorsInfo> SaveContainers()
+        public Task<ErrorsInfo> SaveRepoApps()
         {
             // save containers to file using System.Text.Json
             try
@@ -138,90 +139,90 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Load Containers ";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Load RepoApps ";
+                ErrorsandMesseges.Module = "RepoApp  Management";
             }
             return Task.FromResult(ErrorsandMesseges);
         }
-        public List<IBeepContainer> GetUserContainers(string owner)
+        public List<IBeepRepoApp> GetUserRepoApps(string owner)
         {
             // get all conatiners for a user
-            if(Containers==null)
+            if(RepoApps==null)
             {
-                Containers = new List<IBeepContainer>();
+                RepoApps = new List<IBeepRepoApp>();
             }
-            return Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).ToList();
+            return RepoApps.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).ToList();
         }
-        public List<IBeepContainer> GetUserContainersByGuiID(string guidid)
+        public List<IBeepRepoApp> GetUserRepoAppsByGuiID(string guidid)
         {
             // get all conatiners for a user
-            if (Containers == null)
+            if (RepoApps == null)
             {
-                Containers = new List<IBeepContainer>();
+                RepoApps = new List<IBeepRepoApp>();
             }
-            return Containers.Where(p => p.OwnerGuidID.Equals(guidid, StringComparison.OrdinalIgnoreCase)).ToList();
+            return RepoApps.Where(p => p.OwnerGuidID.Equals(guidid, StringComparison.OrdinalIgnoreCase)).ToList();
         }
-        public List<IBeepContainer> GetUserContainers(int id)
+        public List<IBeepRepoApp> GetUserRepoApps(int id)
         {
-            if (Containers == null)
+            if (RepoApps == null)
             {
-                Containers = new List<IBeepContainer>();
+                RepoApps = new List<IBeepRepoApp>();
             }
             // get all conatiners for a user
-            return Containers.Where(p => p.OwnerID == id).ToList();
+            return RepoApps.Where(p => p.OwnerID == id).ToList();
         }
-        public IBeepContainer GetUserPrimaryContainer(string owner)
+        public IBeepRepoApp GetUserPrimaryRepoApp(string owner)
         {
-            if (Containers == null)
+            if (RepoApps == null)
             {
-                Containers = new List<IBeepContainer>();
+                RepoApps = new List<IBeepRepoApp>();
             }
             // get primary container for a user
-            if (Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).Any())
+            if (RepoApps.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).Any())
             {
-                CurrentContainer = Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).FirstOrDefault();
-                IsContainerActive = true;
-                IsContainerCreated = true;
-                IsContainerLoaded = true;
-                return CurrentContainer;
+                CurrentRepoApp = RepoApps.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.IsPrimary).FirstOrDefault();
+                IsRepoAppActive = true;
+                IsRepoAppCreated = true;
+                IsRepoAppLoaded = true;
+                return CurrentRepoApp;
             }else
-                if(Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).Any())
+                if(RepoApps.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).Any())
             {
-                IsContainerActive = true;
-                IsContainerCreated = true;
-                IsContainerLoaded = true;
-                CurrentContainer = Containers.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                return CurrentContainer;
+                IsRepoAppActive = true;
+                IsRepoAppCreated = true;
+                IsRepoAppLoaded = true;
+                CurrentRepoApp = RepoApps.Where(p => p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                return CurrentRepoApp;
               
             }
-            CurrentContainer= null;
-            IsContainerActive = false;
-            IsContainerCreated = false;
-            IsContainerLoaded = false;
+            CurrentRepoApp= null;
+            IsRepoAppActive = false;
+            IsRepoAppCreated = false;
+            IsRepoAppLoaded = false;
 
             return null;
            
         }
-        public async Task<ErrorsInfo> RemoveContainer(string ContainerGuidID)
+        public async Task<ErrorsInfo> RemoveRepoApp(string RepoAppGuidID)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
                 // -- check if user already Exist
-                var t = Task.Run<IBeepContainer>(() => Containers.Where(p => p.GuidID.Equals(ContainerGuidID, StringComparison.OrdinalIgnoreCase)).FirstOrDefault());
+                var t = Task.Run<IBeepRepoApp>(() => RepoApps.Where(p => p.GuidID.Equals(RepoAppGuidID, StringComparison.OrdinalIgnoreCase)).FirstOrDefault());
                 t.Wait();
 
                 if (t.Result == null)
                 {
                     ErrorsandMesseges.Flag = Errors.Failed;
-                    ErrorsandMesseges.Message = $"Container not Exists";
+                    ErrorsandMesseges.Message = $"RepoApp not Exists";
                 }
                 else
                 {
                     t.Dispose();
-                    Containers.Remove(t.Result);
+                    RepoApps.Remove(t.Result);
                     ErrorsandMesseges.Flag = Errors.Ok;
-                    ErrorsandMesseges.Message = $"Container Added";
+                    ErrorsandMesseges.Message = $"RepoApp Added";
                 }
 
             }
@@ -230,31 +231,31 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Add Container";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Add RepoApp";
+                ErrorsandMesseges.Module = "RepoApp  Management";
 
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> AddUpdateContainer(IBeepContainer pContainer)
+        public async Task<ErrorsInfo> AddUpdateRepoApp(IBeepRepoApp pRepoApp)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
-                // -- check if Container already Exist
+                // -- check if RepoApp already Exist
 
-                if (!Containers.Where(p => p.ContainerName.Equals(pContainer.ContainerName, StringComparison.OrdinalIgnoreCase)).Any())
+                if (!RepoApps.Where(p => p.RepoAppName.Equals(pRepoApp.RepoAppName, StringComparison.OrdinalIgnoreCase)).Any())
                 {
-                    Containers.Add(pContainer);
+                    RepoApps.Add(pRepoApp);
                     ErrorsandMesseges.Flag = Errors.Ok;
-                    ErrorsandMesseges.Message = $"Container Added";
+                    ErrorsandMesseges.Message = $"RepoApp Added";
                 }
                 else
                 {
-                    int idx = Containers.FindIndex(p => p.ContainerName.Equals(pContainer.ContainerName, StringComparison.OrdinalIgnoreCase));
-                    Containers[idx] = pContainer;
+                    int idx = RepoApps.FindIndex(p => p.RepoAppName.Equals(pRepoApp.RepoAppName, StringComparison.OrdinalIgnoreCase));
+                    RepoApps[idx] = pRepoApp;
                     ErrorsandMesseges.Flag = Errors.Ok;
-                    ErrorsandMesseges.Message = $"Container Updated";
+                    ErrorsandMesseges.Message = $"RepoApp Updated";
                 }
 
             }
@@ -263,57 +264,57 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Update/Add Container";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Update/Add RepoApp";
+                ErrorsandMesseges.Module = "RepoApp  Management";
 
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainer(string ContainerGuidID,string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName,  string pContainerFolderPath=null)
+        public async Task<ErrorsInfo> CreateRepoApp(string RepoAppGuidID,string owner, string ownerEmail, int ownerID, string ownerGuid, string pRepoAppName,  string pRepoAppFolderPath=null)
         {
             try
             {
                 ErrorsInfo ErrorsandMesseges = new ErrorsInfo();
-                // -- check if Container already Exist
-                if(string.IsNullOrEmpty(pContainerName))
+                // -- check if RepoApp already Exist
+                if(string.IsNullOrEmpty(pRepoAppName))
                 {
                     ErrorsandMesseges.Flag = Errors.Failed;
-                    ErrorsandMesseges.Message = $"Container Name is Empty";
+                    ErrorsandMesseges.Message = $"RepoApp Name is Empty";
                     return await Task.FromResult(ErrorsandMesseges);
                 }
-                if(string.IsNullOrEmpty(pContainerFolderPath))
+                if(string.IsNullOrEmpty(pRepoAppFolderPath))
                 {
-                    pContainerFolderPath = ContainerFolderPath;
+                    pRepoAppFolderPath = RepoAppFolderPath;
                 }
-                IBeepContainer x = GetContainer( ContainerGuidID, owner, ownerEmail, ownerID, ownerGuid, pContainerName);
+                IBeepRepoApp x = GetRepoApp( RepoAppGuidID, owner, ownerEmail, ownerID, ownerGuid, pRepoAppName);
                 if (x==null)
                 {
-                    x = new BeepContainer() { ContainerName = pContainerName, ContainerFolderPath = pContainerFolderPath };
+                    x = new BeepRepoApp() { RepoAppName = pRepoAppName, RepoAppFolderPath = pRepoAppFolderPath };
                     try
                     {
                         IBeepService beepservice = new BeepService(services);
-                        beepservice.Configure(pContainerFolderPath, pContainerName, BeepConfigType.Container);
+                        beepservice.Configure(pRepoAppFolderPath, pRepoAppName, BeepConfigType.RepoApp);
                         x.BeepService = beepservice;
                         x.GuidID = Guid.NewGuid().ToString();
-                        x.ContainerName = pContainerName;
+                        x.RepoAppName = pRepoAppName;
                         x.AdminUserID = owner;
                         x.Owner = owner;
                         x.OwnerEmail = ownerEmail;
                         x.OwnerID = ownerID;
                         x.OwnerGuidID = ownerGuid;
-                        x.ContainerFolderPath = pContainerFolderPath;
+                        x.RepoAppFolderPath = pRepoAppFolderPath;
                         x.IsPrimary = true;
                         x.isActive = true;
-                        x.GuidID = ContainerGuidID;
-                        Containers.Add(x);
-                        await CreateContainerFileSystem(x);
+                        x.GuidID = RepoAppGuidID;
+                        RepoApps.Add(x);
+                        await CreateRepoAppFileSystem(x);
                         ErrorsandMesseges.Flag = Errors.Ok;
-                        ErrorsandMesseges.Message = $"Container Added";
+                        ErrorsandMesseges.Message = $"RepoApp Added";
                     }
                     catch (Exception ex)
                     {
                         ErrorsandMesseges.Flag = Errors.Failed;
-                        ErrorsandMesseges.Message = $"Container Failed : {ex.Message}";
+                        ErrorsandMesseges.Message = $"RepoApp Failed : {ex.Message}";
                         
                     }
                  
@@ -321,7 +322,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 else
                 {
                     ErrorsandMesseges.Flag = Errors.Failed;
-                    ErrorsandMesseges.Message = $"Container Exist";
+                    ErrorsandMesseges.Message = $"RepoApp Exist";
                 }
 
             }
@@ -330,35 +331,35 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Update/Add Container";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Update/Add RepoApp";
+                ErrorsandMesseges.Module = "RepoApp  Management";
 
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        private IBeepContainer GetContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName)
+        private IBee GetRepoApp(string RepoAppGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pRepoAppName)
         {
-            // Get Container by all parameters owner, ownerEmail, ownerID, ownerGuid, pContainerName
-            return Containers.Where(p => p.ContainerName.Equals(pContainerName, StringComparison.OrdinalIgnoreCase) && p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.OwnerEmail.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase) && p.OwnerID == ownerID && p.OwnerGuidID.Equals(ownerGuid, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            // Get RepoApp by all parameters owner, ownerEmail, ownerID, ownerGuid, pRepoAppName
+            return RepoApps.Where(p => p.RepoAppName.Equals(pRepoAppName, StringComparison.OrdinalIgnoreCase) && p.Owner.Equals(owner, StringComparison.OrdinalIgnoreCase) && p.OwnerEmail.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase) && p.OwnerID == ownerID && p.OwnerGuidID.Equals(ownerGuid, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             
         }
-        public async Task<ErrorsInfo> CreateContainer(string ContainerGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pContainerName,  string pContainerFolderPath, string pSecretKey, string pTokenKey)
+        public async Task<ErrorsInfo> CreateRepoApp(string RepoAppGuidID, string owner, string ownerEmail, int ownerID, string ownerGuid, string pRepoAppName,  string pRepoAppFolderPath, string pSecretKey, string pTokenKey)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
-                // -- check if Container already Exist
+                // -- check if RepoApp already Exist
 
-                ErrorsandMesseges= await CreateContainer( ContainerGuidID, owner,  ownerEmail,  ownerID,  ownerGuid, pContainerName,  pContainerFolderPath);
+                ErrorsandMesseges= await CreateRepoApp( RepoAppGuidID, owner,  ownerEmail,  ownerID,  ownerGuid, pRepoAppName,  pRepoAppFolderPath);
                 if(ErrorsandMesseges.Flag==Errors.Ok)
                 {
-                    IBeepContainer x = GetContainer(ContainerGuidID, owner, ownerEmail, ownerID, ownerGuid, pContainerName); 
+                    IBeepRepoApp x = GetRepoApp(RepoAppGuidID, owner, ownerEmail, ownerID, ownerGuid, pRepoAppName); 
                     x.SecretKey = pSecretKey;
                     x.TokenKey = pTokenKey;
                    
 
-                    ErrorsandMesseges = await AddUpdateContainer(x);
+                    ErrorsandMesseges = await AddUpdateRepoApp(x);
                 }
 
             }
@@ -367,32 +368,32 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Update/Add Container";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Update/Add RepoApp";
+                ErrorsandMesseges.Module = "RepoApp  Management";
 
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public async Task<ErrorsInfo> CreateContainerFileSystem(IBeepContainer pContainer)
+        public async Task<ErrorsInfo> CreateRepoAppFileSystem(IBeepRepoApp pRepoApp)
         {
             try
             {
                 IErrorsInfo ErrorsandMesseges = new ErrorsInfo();
-                // -- check if Container already Exist
+                // -- check if RepoApp already Exist
 
-              //  ErrorsandMesseges = (IErrorsInfo)AddUpdateContainer(pContainer);
+              //  ErrorsandMesseges = (IErrorsInfo)AddUpdateRepoApp(pRepoApp);
                 //--------------------- Create File System -------------
                 if (ErrorsandMesseges.Flag == Errors.Ok)
                 {
-                    if (pContainer.ContainerFolderPath != null)
+                    if (pRepoApp.RepoAppFolderPath != null)
                     {
                         try
                         {
                            string ExePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                         //   string ConatinerPath = Path.Combine(ExePath, pContainer.ContainerFolderPath);
-                         if(File.Exists(Path.Combine(ExePath, "BeepContainerFiles.zip")))
+                         //   string ConatinerPath = Path.Combine(ExePath, pRepoApp.RepoAppFolderPath);
+                         if(File.Exists(Path.Combine(ExePath, "BeepRepoAppFiles.zip")))
                          {
-                                await Task.Run(() => ZipFile.ExtractToDirectory(Path.Combine(ExePath, "BeepContainerFiles.zip"), Path.Combine(ContainerFolderPath,pContainer.ContainerName)));
+                                await Task.Run(() => ZipFile.ExtractToDirectory(Path.Combine(ExePath, "BeepRepoAppFiles.zip"), Path.Combine(RepoAppFolderPath,pRepoApp.RepoAppName)));
                          }
                         }
                         #region "Catch for Zip file Extract"
@@ -440,7 +441,7 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                         //    //-------- Create DMService -----
                         //    try
                         //    {
-                        //        services.AddScoped<IBeepService>(s => new BeepService(services, AppContext.BaseDirectory, pContainer.ContainerName, BeepConfigType.Container));
+                        //        services.AddScoped<IBeepService>(s => new BeepService(services, AppContext.BaseDirectory, pRepoApp.RepoAppName, BeepConfigType.RepoApp));
                         //        var provider = services.BuildServiceProvider();
                         //        var ContianerService = provider.GetService<IBeepService>();
 
@@ -461,23 +462,23 @@ namespace TheTechIdea.Beep.Container.ContainerManagement
                 ErrorsandMesseges.Flag = Errors.Failed;
                 ErrorsandMesseges.Message = ex.Message;
                 ErrorsandMesseges.Ex = ex;
-                ErrorsandMesseges.Fucntion = "Update/Add Container";
-                ErrorsandMesseges.Module = "Container  Management";
+                ErrorsandMesseges.Fucntion = "Update/Add RepoApp";
+                ErrorsandMesseges.Module = "RepoApp  Management";
 
             }
             return await Task.FromResult(ErrorsandMesseges);
         }
-        public IBeepContainer GetBeepContainer(string ContainerName)
+        public IBeepRepoApp GetBeepRepoApp(string RepoAppName)
         {
-            return Containers.Where(p => p.ContainerName.Equals(ContainerName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            return RepoApps.Where(p => p.RepoAppName.Equals(RepoAppName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
         }
-        public IBeepContainer GetBeepContainerByID(int ContainerID)
+        public IBeepRepoApp GetBeepRepoAppByID(int RepoAppID)
         {
-            return Containers.Where(p => p.ContainerID == ContainerID).FirstOrDefault();
+            return RepoApps.Where(p => p.RepoAppID == RepoAppID).FirstOrDefault();
         }
-        public IBeepContainer GetBeepContainerByGuidID(string ContainerGuidID)
+        public IBeepRepoApp GetBeepRepoAppByGuidID(string RepoAppGuidID)
         {
-            return Containers.Where(p => p.GuidID == ContainerGuidID).FirstOrDefault();
+            return RepoApps.Where(p => p.GuidID == RepoAppGuidID).FirstOrDefault();
         }
         protected virtual void Dispose(bool disposing)
         {
